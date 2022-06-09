@@ -49,7 +49,8 @@ PKG_INSTALLDIR
 AM_PROG_CC_C_O
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_CXX
-AC_PROG_LIBTOOL
+dnl Use LT_INIT instead of AC_PROG_LIBTOOL, if available
+m4_ifdef([LT_INIT], [LT_INIT], [AC_PROG_LIBTOOL])
 
 #-----------------------------------------------------------------------------
 # Kernel modules
@@ -89,10 +90,8 @@ AC_SUBST(ENABLE_KERNEL,[$enablekernel])
 if test "x$enablekernel" = "x1"; then
 
 AC_ARG_WITH([linux-dir],
-    AC_HELP_STRING(
-        [--with-linux-dir=<DIR>],
-        [Linux kernel sources @<:@running kernel@:>@]
-    ),
+    AS_HELP_STRING([--with-linux-dir=<DIR>],
+                   [Linux kernel sources @<:@running kernel@:>@]),
     [
         sourcedir=[$withval]
     ],
@@ -151,10 +150,8 @@ fi
 #-----------------------------------------------------------------------------
 
 AC_ARG_WITH([module-dir],
-    AC_HELP_STRING(
-        [--with-module-dir=<DIR>],
-        [Linux module installation dir. Default: ethercat]
-    ),
+    AS_HELP_STRING([--with-module-dir=<DIR>],
+                   [Linux module installation dir. Default: ethercat]),
     [moddir=[$withval]],
     [moddir="ethercat"]
 )
@@ -241,10 +238,8 @@ AM_CONDITIONAL(ENABLE_8139TOO, test "x$enable8139too" = "x1")
 AC_SUBST(ENABLE_8139TOO,[$enable8139too])
 
 AC_ARG_WITH([8139too-kernel],
-    AC_HELP_STRING(
-        [--with-8139too-kernel=<X.Y.Z>],
-        [8139too kernel (only if differing)]
-    ),
+    AS_HELP_STRING([--with-8139too-kernel=<X.Y.Z>],
+                   [8139too kernel (only if differing)]),
     [
         kernel8139too=[$withval]
     ],
@@ -296,10 +291,8 @@ AM_CONDITIONAL(ENABLE_E100, test "x$enablee100" = "x1")
 AC_SUBST(ENABLE_E100,[$enablee100])
 
 AC_ARG_WITH([e100-kernel],
-    AC_HELP_STRING(
-        [--with-e100-kernel=<X.Y.Z>],
-        [e100 kernel (only if differing)]
-    ),
+    AS_HELP_STRING([--with-e100-kernel=<X.Y.Z>],
+                   [e100 kernel (only if differing)]),
     [
         kernele100=[$withval]
     ],
@@ -351,10 +344,8 @@ AM_CONDITIONAL(ENABLE_E1000, test "x$enablee1000" = "x1")
 AC_SUBST(ENABLE_E1000,[$enablee1000])
 
 AC_ARG_WITH([e1000-kernel],
-    AC_HELP_STRING(
-        [--with-e1000-kernel=<X.Y.Z>],
-        [e1000 kernel (only if differing)]
-    ),
+    AS_HELP_STRING([--with-e1000-kernel=<X.Y.Z>],
+                   [e1000 kernel (only if differing)]),
     [
         kernele1000=[$withval]
     ],
@@ -406,10 +397,8 @@ AM_CONDITIONAL(ENABLE_E1000E, test "x$enablee1000e" = "x1")
 AC_SUBST(ENABLE_E1000E,[$enablee1000e])
 
 AC_ARG_WITH([e1000e-kernel],
-    AC_HELP_STRING(
-        [--with-e1000e-kernel=<X.Y.Z>],
-        [e1000e kernel (only if differing)]
-    ),
+    AS_HELP_STRING([--with-e1000e-kernel=<X.Y.Z>],
+                   [e1000e kernel (only if differing)]),
     [
         kernele1000e=[$withval]
     ],
@@ -529,9 +518,8 @@ AM_CONDITIONAL(ENABLE_IGB, test "x$enableigb" = "x1")
 AC_SUBST(ENABLE_IGB,[$enableigb])
 
 AC_ARG_WITH([igb-kernel],
-    AC_HELP_STRING(
-        [--with-igb-kernel=<X.Y.Z>],
-        [igb kernel (only if differing)]
+    AS_HELP_STRING([--with-igb-kernel=<X.Y.Z>],
+                   [igb kernel (only if differing)]
     ),
     [
         kerneligb=[$withval]
@@ -624,10 +612,8 @@ AM_CONDITIONAL(ENABLE_R8169, test "x$enable_r8169" = "x1")
 AC_SUBST(ENABLE_R8169,[$enable_r8169])
 
 AC_ARG_WITH([r8169-kernel],
-    AC_HELP_STRING(
-        [--with-r8169-kernel=<X.Y.Z>],
-        [r8169 kernel (only if differing)]
-    ),
+    AS_HELP_STRING([--with-r8169-kernel=<X.Y.Z>],
+                   [r8169 kernel (only if differing)]),
     [
         kernel_r8169=[$withval]
     ],
@@ -774,10 +760,8 @@ AC_SUBST(ENABLE_CCAT,[$enableccat])
 #-----------------------------------------------------------------------------
 
 AC_ARG_WITH([rtai-dir],
-    AC_HELP_STRING(
-        [--with-rtai-dir=<DIR>],
-        [RTAI path, for RTDM interface and RTAI examples]
-    ),
+    AS_HELP_STRING([--with-rtai-dir=<DIR>],
+                   [RTAI path, for RTDM interface and RTAI examples]),
     [
         rtaidir=[$withval]
         rtai=1
@@ -818,10 +802,8 @@ AC_SUBST(RTAI_KERNEL_CFLAGS,[$rtai_kernel_cflags])
 #-----------------------------------------------------------------------------
 
 AC_ARG_WITH([xenomai-dir],
-    AC_HELP_STRING(
-        [--with-xenomai-dir=<DIR>],
-        [Xenomai path, for RTDM interface and Xenomai examples]
-    ),
+    AS_HELP_STRING([--with-xenomai-dir=<DIR>],
+                   [Xenomai path, for RTDM interface and Xenomai examples]),
     [
         xenomaidir=[$withval]
         xeno=1
@@ -899,10 +881,8 @@ AC_SUBST(XENOMAI_RTDM_LDFLAGS,[$xeno_rtdm_ldflags])
 #-----------------------------------------------------------------------------
 
 AC_ARG_ENABLE([rtdm],
-    AC_HELP_STRING(
-        [--enable-rtdm],
-        [Enable RTDM interface, depends on RTAI or Xenomai]
-    ),
+    AS_HELP_STRING([--enable-rtdm],
+                   [Enable RTDM interface, depends on RTAI or Xenomai]),
     [
         case "${enableval}" in
             yes) rtdm=1
@@ -1265,10 +1245,8 @@ fi
 #-----------------------------------------------------------------------------
 
 AC_ARG_WITH([devices],
-    AC_HELP_STRING(
-        [--with-devices=<NUMBER>],
-        [Number of Ethernet devices per master. Default: 1]
-    ),
+    AS_HELP_STRING([--with-devices=<NUMBER>],
+                   [Number of Ethernet devices per master. Default: 1]),
     [
         devices=[$withval]
     ],

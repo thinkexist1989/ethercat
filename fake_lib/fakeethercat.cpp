@@ -118,7 +118,7 @@ int ec_domain::activate(int domain_id)
         slaves.insert(pdo.slave_address.getCombined());
         void *rt_pdo = nullptr;
         char buf[512];
-        const auto fmt = snprintf(buf, sizeof(buf), "%s/%d/%d/%08X/%04X", prefix, master->getId(), domain_id, pdo.slave_address.getCombined(), pdo.pdo_index);
+        const auto fmt = snprintf(buf, sizeof(buf), "%s/%d/%08X/%04X", prefix, master->getId(), pdo.slave_address.getCombined(), pdo.pdo_index);
         if (fmt < 0 || fmt >= (int)sizeof(buf))
         {
             return -ENOBUFS;

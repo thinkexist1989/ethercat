@@ -1,16 +1,16 @@
 FakeEtherCAT Library                        {#libfakeethercat}
 ====================
 
-Libfakeethercat is a userspace library which has the same API as
-the EtherCAT master interface library libethercat.
-Libfakeethercat can be used to spin up your RT application in a dry-run mode,
-without any master configured or slaves attached.
-Furthermore, it is possible to emulate EtherCAT slaves on process data level
-by running two applications back to back.
+Libfakeethercat is a userspace library which has the same API as the EtherCAT
+master interface library libethercat. Libfakeethercat can be used to spin up
+your RT application in a dry-run mode, without any master configured or slaves
+attached. Furthermore, it is possible to emulate EtherCAT slaves on process
+data level by running two applications back to back.
 
 ## Supported features
 
-Currently, only a very limited subset of libethercat functionality is supported:
+Currently, only a very limited subset of libethercat functionality is
+supported:
 
  - Creating master and domain instances
  - Activating master, `send`/`receive`.
@@ -18,26 +18,24 @@ Currently, only a very limited subset of libethercat functionality is supported:
  - Configuring PDOs
  - Configuring SDOs using `ecrt_slave_config_sdo*`
 
-The SDO config does not do anything,
-but when activating the master the SDO config will
-be dumped into a JSON file.
+The SDO config does not do anything, but when activating the master the SDO
+config will be dumped into a JSON file.
 
-ecrt_master_state() and ecrt_domain_state() both return states as if
-the bus works without errors.
-So currenty, a bus error cannot be simulated.
+`ecrt_master_state()` and `ecrt_domain_state()` both return states as if the
+bus works without errors. So currently, a bus error cannot be simulated.
 
 ## How to build
 
-[RtIPC](https://gitlab.com/etherlab.org/rtipc) is needed.
-Simply pass `--enable-fakeuserlib` to your `./configure` call
-and the library will be built for you.
+[RtIPC](https://gitlab.com/etherlab.org/rtipc) is needed.  Simply pass
+`--enable-fakeuserlib` to your `./configure` call and the library will be
+built for you.
 
 ## How to set up dry run mode
 
 ### Redirect library loading
 
-To avoid recompiling your application,
-we will use `LD_LIBRARY_PATH` to load `libfakeethercat` instead of `libethercat`.
+To avoid recompiling your application, we will use `LD_LIBRARY_PATH` to load
+`libfakeethercat` instead of `libethercat`.
 
 ```sh
 # pick a location for an empty directory
@@ -52,16 +50,15 @@ ln -s /usr/lib64/libfakeethercat.so.1 $MY_LIB_LOCATION/libethercat.so.1
 export LD_LIBRARY_PATH=$MY_LIB_LOCATION
 # check whether everything is done right
 ldd my_application | grep ethercat
-    libethercat.so.1 => /home/vh/fake_lib64/libethercat.so.1 (0x00007fa5a5c59000)
+    libethercat.so.1 => /home/vh/fake_lib64/libethercat.so.1 (0x7fa5c590)
 ```
 
 ### Set up FakeEtherCAT Home
 
-RtIPC needs a place to store its configuration.
-Set `FAKE_EC_HOMEDIR` environment variabe to a path to an empty directory,
-for instance `/tmp/FakeEtherCAT`.
-`FAKE_EC_NAME` can be set to a useful name of your application,
-default is `FakeEtherCAT`.
+RtIPC needs a place to store its configuration. Set `FAKE_EC_HOMEDIR`
+environment variable to a path to an empty directory, for instance
+`/tmp/FakeEtherCAT`. `FAKE_EC_NAME` can be set to a useful name of your
+application, default is `FakeEtherCAT`.
 
 ```sh
 export FAKE_EC_HOMEDIR=/tmp/FakeEtherCAT
@@ -113,13 +110,9 @@ Then, in another shell, do the same thing with your simulator,
 but do not remove the `FAKE_EC_HOMEDIR` directory and
 pick another `FAKE_EC_NAME`.
 
-Carefully watch the PDO configuration on stderr and compare them.
-All paths configured as Output on the control application have to
-be configured as Input on your simulator and vice versa.
-If you use multiple domains and there is a mismatch of the domain IDs,
-set `FAKE_EC_DOMAIN_PERMUTATION` to a space-separated list of integers to
-permutate the domain IDs of one application.
-`FAKE_EC_DOMAIN_PERMUTATION="0 1"` swaps domains 0 and 1, for instance.
+Carefully watch the PDO configuration on stderr and compare them. All paths
+configured as output on the control application have to be configured as input
+on your simulator and vice versa.
 
 Finally, your control application needs to be restarted
 so it can find the RtIPC variables which contains the process data of the
@@ -127,7 +120,7 @@ simulator.
 
 ## Environment variables
 
- - FAKE_EC_DOMAIN_PERMUTATION: Permutate the domain IDs, useful to match control and simulation applications.
- - FAKE_EC_HOMEDIR: Directory for RtIPC builletin board and SDO json files
+ - FAKE_EC_HOMEDIR: Directory for RtIPC bulletin board and SDO json files
  - FAKE_EC_NAME: Will be used for naming RtIPC config and SDO json file
- - FAKE_EC_PREFIX: Prefix for RtIPC variables, useful to run multiple simulators side by side.
+ - FAKE_EC_PREFIX: Prefix for RtIPC variables, useful to run multiple
+                   simulators side by side.

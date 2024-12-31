@@ -488,11 +488,19 @@ static void ec_tty_close(struct tty_struct *tty, struct file *file)
 
 /****************************************************************************/
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0)
+static ssize_t ec_tty_write(
+        struct tty_struct *tty,
+        const u8 *buffer,
+        size_t count
+        )
+#else
 static int ec_tty_write(
         struct tty_struct *tty,
         const unsigned char *buffer,
         int count
         )
+#endif
 {
     ec_tty_t *t = (ec_tty_t *) tty->driver_data;
     unsigned int data_size, i;

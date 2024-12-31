@@ -64,9 +64,9 @@ ec_tty_t *ttys[EC_TTY_MAX_DEVICES];
 struct semaphore tty_sem;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
-void ec_tty_wakeup(struct timer_list *);
+static void ec_tty_wakeup(struct timer_list *);
 #else
-void ec_tty_wakeup(unsigned long);
+static void ec_tty_wakeup(unsigned long);
 #endif
 
 /****************************************************************************/
@@ -125,7 +125,7 @@ static const struct tty_operations ec_tty_ops; // see below
  *
  * \return 0 on success, else < 0
  */
-int __init ec_tty_init_module(void)
+static int __init ec_tty_init_module(void)
 {
     int i, ret = 0;
     unsigned flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
@@ -186,7 +186,7 @@ out_return:
  *
  * Clears all master instances.
  */
-void __exit ec_tty_cleanup_module(void)
+static void __exit ec_tty_cleanup_module(void)
 {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)
     int i;
@@ -213,7 +213,7 @@ void __exit ec_tty_cleanup_module(void)
  * ec_tty_t methods.
  ****************************************************************************/
 
-int ec_tty_init(ec_tty_t *t, int minor,
+static int ec_tty_init(ec_tty_t *t, int minor,
         const ec_tty_operations_t *ops, void *cb_data)
 {
     int ret;
@@ -290,7 +290,7 @@ int ec_tty_init(ec_tty_t *t, int minor,
 
 /****************************************************************************/
 
-void ec_tty_clear(ec_tty_t *tty)
+static void ec_tty_clear(ec_tty_t *tty)
 {
     del_timer_sync(&tty->timer);
     tty_unregister_device(tty_driver, tty->minor);
@@ -298,7 +298,7 @@ void ec_tty_clear(ec_tty_t *tty)
 
 /****************************************************************************/
 
-unsigned int ec_tty_tx_size(ec_tty_t *tty)
+static unsigned int ec_tty_tx_size(ec_tty_t *tty)
 {
     unsigned int ret;
 
@@ -313,14 +313,14 @@ unsigned int ec_tty_tx_size(ec_tty_t *tty)
 
 /****************************************************************************/
 
-unsigned int ec_tty_tx_space(ec_tty_t *tty)
+static unsigned int ec_tty_tx_space(ec_tty_t *tty)
 {
     return EC_TTY_TX_BUFFER_SIZE - 1 - ec_tty_tx_size(tty);
 }
 
 /****************************************************************************/
 
-unsigned int ec_tty_rx_size(ec_tty_t *tty)
+static unsigned int ec_tty_rx_size(ec_tty_t *tty)
 {
     unsigned int ret;
 
@@ -335,14 +335,14 @@ unsigned int ec_tty_rx_size(ec_tty_t *tty)
 
 /****************************************************************************/
 
-unsigned int ec_tty_rx_space(ec_tty_t *tty)
+static unsigned int ec_tty_rx_space(ec_tty_t *tty)
 {
     return EC_TTY_RX_BUFFER_SIZE - 1 - ec_tty_rx_size(tty);
 }
 
 /****************************************************************************/
 
-int ec_tty_get_serial_info(ec_tty_t *tty, struct serial_struct *data)
+static int ec_tty_get_serial_info(ec_tty_t *tty, struct serial_struct *data)
 {
     struct serial_struct tmp;
 
@@ -362,9 +362,9 @@ int ec_tty_get_serial_info(ec_tty_t *tty, struct serial_struct *data)
 /** Timer function.
  */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
-void ec_tty_wakeup(struct timer_list *t)
+static void ec_tty_wakeup(struct timer_list *t)
 #else
-void ec_tty_wakeup(unsigned long data)
+static void ec_tty_wakeup(unsigned long data)
 #endif
 {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)

@@ -724,7 +724,11 @@ static int ec_tty_break(struct tty_struct *tty, int break_state)
 
 /****************************************************************************/
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 8, 0)
+static void ec_tty_send_xchar(struct tty_struct *tty, u8 ch)
+#else
 static void ec_tty_send_xchar(struct tty_struct *tty, char ch)
+#endif
 {
 #if EC_TTY_DEBUG >= 2
     printk(KERN_INFO PFX "%s(ch=%02x).\n", __func__, (unsigned int) ch);

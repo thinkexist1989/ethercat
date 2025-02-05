@@ -77,7 +77,7 @@ static unsigned int off_ana_in;
 static unsigned int off_ana_out;
 static unsigned int off_dig_out;
 
-const static ec_pdo_entry_reg_t domain1_regs[] = {
+static const ec_pdo_entry_reg_t domain1_regs[] = {
 #if EL3152_ALT_PDOS
     {AnaInSlavePos,  Beckhoff_EL3152, 0x6401, 1, &off_ana_in},
 #else

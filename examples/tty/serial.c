@@ -27,6 +27,8 @@
 #include "../../include/ecrt.h" // EtherCAT realtime interface
 #include "../../include/ectty.h" // EtherCAT TTY interface
 
+#include "serial.h"
+
 /****************************************************************************/
 
 // Optional features
@@ -114,7 +116,7 @@ LIST_HEAD(handlers);
  * Revision number: 0x00100000
  */
 
-ec_pdo_entry_info_t el6002_pdo_entries[] = {
+static const ec_pdo_entry_info_t el6002_pdo_entries[] = {
    {0x7001, 0x01, 16}, /* Ctrl */
    {0x7000, 0x11, 8}, /* Data Out 0 */
    {0x7000, 0x12, 8}, /* Data Out 1 */
@@ -209,14 +211,14 @@ ec_pdo_entry_info_t el6002_pdo_entries[] = {
    {0x6010, 0x26, 8}, /* Data In 21 */
 };
 
-ec_pdo_info_t el6002_pdos[] = {
+static const ec_pdo_info_t el6002_pdos[] = {
    {0x1604, 23, el6002_pdo_entries + 0}, /* COM RxPDO-Map Outputs Ch.1 */
    {0x1605, 23, el6002_pdo_entries + 23}, /* COM RxPDO-Map Outputs Ch.2 */
    {0x1a04, 23, el6002_pdo_entries + 46}, /* COM TxPDO-Map Inputs Ch.1 */
    {0x1a05, 23, el6002_pdo_entries + 69}, /* COM TxPDO-Map Inputs Ch.2 */
 };
 
-ec_sync_info_t el6002_syncs[] = {
+static const ec_sync_info_t el6002_syncs[] = {
    {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
    {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
    {2, EC_DIR_OUTPUT, 2, el6002_pdos + 0, EC_WD_DISABLE},
@@ -275,7 +277,7 @@ el600x_baud_rate_t el600x_baud_rate[] = {
 
 /****************************************************************************/
 
-int el60xx_cflag_changed(void *data, tcflag_t cflag)
+static int el60xx_cflag_changed(void *data, tcflag_t cflag)
 {
     el60xx_port_t *port = (el60xx_port_t *) data;
     unsigned int data_bits, stop_bits;
@@ -375,7 +377,7 @@ static ec_tty_operations_t el60xx_tty_ops = {
 
 /****************************************************************************/
 
-int el60xx_port_init(el60xx_port_t *port, ec_slave_config_t *sc,
+static int el60xx_port_init(el60xx_port_t *port, ec_slave_config_t *sc,
         ec_domain_t *domain, unsigned int slot_offset, const char *name)
 {
     int ret = 0;
@@ -490,7 +492,7 @@ out_return:
 
 /****************************************************************************/
 
-void el60xx_port_clear(el60xx_port_t *port)
+static void el60xx_port_clear(el60xx_port_t *port)
 {
     ectty_free(port->tty);
     if (port->tx_data) {
@@ -500,7 +502,7 @@ void el60xx_port_clear(el60xx_port_t *port)
 
 /****************************************************************************/
 
-void el60xx_port_run(el60xx_port_t *port, u8 *pd)
+static void el60xx_port_run(el60xx_port_t *port, u8 *pd)
 {
     u16 status = EC_READ_U16(pd + port->off_status);
     u8 *rx_data = pd + port->off_rx;
@@ -658,7 +660,7 @@ void el60xx_port_run(el60xx_port_t *port, u8 *pd)
 
 /****************************************************************************/
 
-int el6002_init(el6002_t *el6002, ec_master_t *master, u16 position,
+static int el6002_init(el6002_t *el6002, ec_master_t *master, u16 position,
         ec_domain_t *domain, u32 vendor, u32 product)
 {
     int ret = 0, i;
@@ -702,7 +704,7 @@ out_return:
 
 /****************************************************************************/
 
-void el6002_clear(el6002_t *el6002)
+static void el6002_clear(el6002_t *el6002)
 {
     int i;
 
@@ -713,7 +715,7 @@ void el6002_clear(el6002_t *el6002)
 
 /****************************************************************************/
 
-void el6002_run(el6002_t *el6002, u8 *pd)
+static void el6002_run(el6002_t *el6002, u8 *pd)
 {
     int i;
 
@@ -735,7 +737,7 @@ void run_serial_devices(u8 *pd)
 
 /****************************************************************************/
 
-int create_el6002_handler(ec_master_t *master, ec_domain_t *domain,
+static int create_el6002_handler(ec_master_t *master, ec_domain_t *domain,
         u16 position, u32 vendor, u32 product)
 {
     el6002_t *el6002;

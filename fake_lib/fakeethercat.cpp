@@ -31,8 +31,6 @@
 #include <iterator>
 #include <ios>
 
-static std::vector<size_t> getPermutationVector(size_t count);
-
 static std::ostream &operator<<(std::ostream &os, const sdo_address &a)
 {
     os << std::setfill('0') << std::hex << std::setw(6) << a.getCombined();
@@ -118,7 +116,7 @@ int ec_domain::activate(int domain_id)
         slaves.insert(pdo.slave_address.getCombined());
         void *rt_pdo = nullptr;
         char buf[512];
-        const auto fmt = snprintf(buf, sizeof(buf), "%s/%d/%d/%08X/%04X", prefix, master->getId(), domain_id, pdo.slave_address.getCombined(), pdo.pdo_index);
+        const auto fmt = snprintf(buf, sizeof(buf), "%s/%d/%08X/%04X", prefix, master->getId(), pdo.slave_address.getCombined(), pdo.pdo_index);
         if (fmt < 0 || fmt >= (int)sizeof(buf))
         {
             return -ENOBUFS;
@@ -213,14 +211,6 @@ int ecrt_domain_state(
 
 int ec_master::activate()
 {
-    const auto permutate = getPermutationVector(domains.size());
-    int i = 0;
-    for (auto &domain : domains)
-    {
-        if (domain.activate(permutate[i]))
-            return -1;
-        ++i;
-    }
     {
         std::ofstream out(rt_ipc_dir + "/" + rt_ipc_name + "_slaves.json");
         if (!out.is_open())
@@ -431,30 +421,6 @@ static const char *getRtIpcDir()
         return ans;
     }
     return "/tmp/FakeEtherCAT";
-}
-
-static std::vector<size_t> getPermutationVector(size_t count)
-{
-    std::vector<size_t> ans;
-    for (size_t i = 0; i < count; ++i)
-    {
-        ans.push_back(i);
-    }
-    const auto spec = getenv("FAKE_EC_DOMAIN_PERMUTATION");
-    if (!spec)
-        return ans;
-    std::istringstream is(spec);
-    std::istream_iterator<int> begin(is), end;
-    std::vector<int> values(begin, end);
-    if (values.size() % 2)
-    {
-        throw std::invalid_argument("Specify an even number of indices to permutate.\n");
-    }
-    for (size_t i = 0; i < values.size() / 2; ++i)
-    {
-        std::swap(ans.at(values[2 * i]), ans.at(values[2 * i + 1]));
-    }
-    return ans;
 }
 
 ec_master::ec_master(int id) : rt_ipc_dir(getRtIpcDir()), rt_ipc_name(getName()), rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())), id_(id)

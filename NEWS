@@ -4,6 +4,20 @@ vim: spelllang=en spell tw=78
 
 -------------------------------------------------------------------------------
 
+Changes in 1.6.3:
+
+* Fix ccat for aarch64 >= 6.11.0
+* Removed domain information from libfakeethercat RtIPC paths
+* Remove unnecessary inline statement causing build -O0 problems
+* Fixed some compiler warnings
+* Added static keywords to internal functions
+
+Changes in 1.6.2:
+
+* Fixed typo in bash completition.
+* Directly include soe_error_codes into SoeCommand.cpp
+* Fixed check of non-zero bit offset in libfakeethercat
+
 Changes in 1.6.1:
 
 * Added libfakeethercat to simulate Process Data of EtherCAT Slaves.

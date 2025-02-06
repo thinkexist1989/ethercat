@@ -44,7 +44,7 @@
 // EtherCAT
 static ec_master_t *master = NULL;
 static ec_master_state_t master_state = {};
-struct semaphore master_sem;
+static struct semaphore master_sem;
 
 static ec_domain_t *domain1 = NULL;
 static ec_domain_state_t domain1_state = {};
@@ -65,7 +65,7 @@ static unsigned int counter = 0;
 
 /****************************************************************************/
 
-void check_domain1_state(void)
+static void check_domain1_state(void)
 {
     ec_domain_state_t ds;
 
@@ -83,7 +83,7 @@ void check_domain1_state(void)
 
 /****************************************************************************/
 
-void check_master_state(void)
+static void check_master_state(void)
 {
     ec_master_state_t ms;
 
@@ -104,9 +104,9 @@ void check_master_state(void)
 /****************************************************************************/
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
-void cyclic_task(struct timer_list *t)
+static void cyclic_task(struct timer_list *t)
 #else
-void cyclic_task(unsigned long data)
+static void cyclic_task(unsigned long data)
 #endif
 {
     // receive process data
@@ -142,7 +142,7 @@ void cyclic_task(unsigned long data)
 
 /****************************************************************************/
 
-void send_callback(void *cb_data)
+static void send_callback(void *cb_data)
 {
     ec_master_t *m = (ec_master_t *) cb_data;
     down(&master_sem);
@@ -152,7 +152,7 @@ void send_callback(void *cb_data)
 
 /****************************************************************************/
 
-void receive_callback(void *cb_data)
+static void receive_callback(void *cb_data)
 {
     ec_master_t *m = (ec_master_t *) cb_data;
     down(&master_sem);
@@ -162,7 +162,7 @@ void receive_callback(void *cb_data)
 
 /****************************************************************************/
 
-int __init init_mini_module(void)
+static int __init init_mini_module(void)
 {
     int ret = -1;
     ec_slave_config_t *sc;
@@ -229,7 +229,7 @@ out_return:
 
 /****************************************************************************/
 
-void __exit cleanup_mini_module(void)
+static void __exit cleanup_mini_module(void)
 {
     printk(KERN_INFO PFX "Stopping...\n");
 

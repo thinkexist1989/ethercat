@@ -105,7 +105,7 @@ ec_domain::ec_domain(rtipc *rtipc, const char *prefix, ec_master_t *master) : rt
 {
 }
 
-int ec_domain::activate(int domain_id)
+int ec_domain::activate()
 {
     std::unordered_set<uint32_t> slaves;
 
@@ -211,6 +211,12 @@ int ecrt_domain_state(
 
 int ec_master::activate()
 {
+    for (auto &domain : domains)
+    {
+        if (domain.activate())
+            return -1;
+    }
+
     {
         std::ofstream out(rt_ipc_dir + "/" + rt_ipc_name + "_slaves.json");
         if (!out.is_open())

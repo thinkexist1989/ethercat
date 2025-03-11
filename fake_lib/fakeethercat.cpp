@@ -420,16 +420,16 @@ static const char *getName()
     return "FakeEtherCAT";
 }
 
-static const char *getRtIpcDir()
+static std::string getRtIpcDir(int idx)
 {
     if (const auto ans = getenv("FAKE_EC_HOMEDIR"))
     {
-        return ans;
+        return ans + std::string("/") + std::to_string(idx);
     }
-    return "/tmp/FakeEtherCAT";
+    return "/tmp/FakeEtherCAT/" + std::to_string(idx);
 }
 
-ec_master::ec_master(int id) : rt_ipc_dir(getRtIpcDir()), rt_ipc_name(getName()), rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())), id_(id)
+ec_master::ec_master(int id) : rt_ipc_dir(getRtIpcDir(id)), rt_ipc_name(getName()), rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())), id_(id)
 {
 }
 

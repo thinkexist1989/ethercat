@@ -30,6 +30,7 @@
 #include <unordered_set>
 #include <iterator>
 #include <ios>
+#include <sys/stat.h>
 
 static std::ostream &operator<<(std::ostream &os, const sdo_address &a)
 {
@@ -105,7 +106,7 @@ ec_domain::ec_domain(rtipc *rtipc, const char *prefix, ec_master_t *master) : rt
 {
 }
 
-int ec_domain::activate(int domain_id)
+int ec_domain::activate()
 {
     std::unordered_set<uint32_t> slaves;
 
@@ -211,6 +212,12 @@ int ecrt_domain_state(
 
 int ec_master::activate()
 {
+    for (auto &domain : domains)
+    {
+        if (domain.activate())
+            return -1;
+    }
+
     {
         std::ofstream out(rt_ipc_dir + "/" + rt_ipc_name + "_slaves.json");
         if (!out.is_open())
@@ -414,16 +421,40 @@ static const char *getName()
     return "FakeEtherCAT";
 }
 
-static const char *getRtIpcDir()
+static int mkpath(const std::string &file_path)
 {
-    if (const auto ans = getenv("FAKE_EC_HOMEDIR"))
+    if (file_path.empty())
+        return 0;
+
+    std::size_t offset = 0;
+    do
     {
-        return ans;
-    }
-    return "/tmp/FakeEtherCAT";
+        offset = file_path.find('/', offset + 1);
+        const auto subpath = file_path.substr(0, offset);
+        if (mkdir(subpath.c_str(), 0755) == -1)
+        {
+            if (errno != EEXIST)
+            {
+                return -1;
+            }
+        }
+    } while (offset != std::string::npos);
+    return 0;
 }
 
-ec_master::ec_master(int id) : rt_ipc_dir(getRtIpcDir()), rt_ipc_name(getName()), rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())), id_(id)
+static std::string getRtIpcDir(int idx)
+{
+    std::string ans;
+    if (const auto e = getenv("FAKE_EC_HOMEDIR"))
+    {
+        ans = e + std::string("/") + std::to_string(idx);
+    }
+    ans = "/tmp/FakeEtherCAT/" + std::to_string(idx);
+    mkpath(ans);
+    return ans;
+}
+
+ec_master::ec_master(int id) : rt_ipc_dir(getRtIpcDir(id)), rt_ipc_name(getName()), rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())), id_(id)
 {
 }
 

@@ -65,13 +65,14 @@ export FAKE_EC_HOMEDIR=/tmp/FakeEtherCAT
 rm -rf $FAKE_EC_HOMEDIR
 mkdir -p $FAKE_EC_HOMEDIR
 ```
+For each master instance, one subdirectory named by the master id is created.
 
 ### Spin up your application
 
 Now it's time to simply launch your application.
 You will notice that the PDO configuration will be dumped at stderr.
 The path displayed is the path of the RtIPC variable in the following format:
-`$FAKE_EC_PREFIX/$MASTER_ID/$DOMAIN_ID/$ALIAS$POSITION/$PDO`.
+`$FAKE_EC_PREFIX/$MASTER_ID/$ALIAS$POSITION/$PDO`.
 
 ## How to emulate EtherCAT slaves
 

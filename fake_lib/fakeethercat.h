@@ -180,7 +180,7 @@ public:
         return const_cast<uint8_t *>(data.data());
     }
 
-    int activate(int domain_id);
+    int activate();
     int process();
     int queue();
 

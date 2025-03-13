@@ -10,12 +10,12 @@ section of the
 
 ---
 
-For the impatient: The procedure mainly consists of calling
+For the impatient, the procedure mainly consists of calling:
 
 ```bash
 ./bootstrap # to create the configure script, if downloaded from the repo
 
-./configure
+./configure --sysconfdir=/etc
 make all modules
 ```
 
@@ -26,13 +26,11 @@ make modules_install install
 depmod
 ```
 
-... and linking the init script and copying the sysconfig file from $PREFIX/etc
-to the appropriate locations and customizing the sysconfig file.
+... and then customizing the appropriate configuration file:
 
 ```bash
-ln -s ${PREFIX}/etc/init.d/ethercat /etc/init.d/ethercat
-cp ${PREFIX}/etc/sysconfig/ethercat /etc/sysconfig/ethercat
-vi /etc/sysconfig/ethercat
+# vi /etc/ethercat.conf      # For systemd based distro
+# vi /etc/sysconfig/ethercat # For init.d based distro
 ```
 
 Make sure, that the 'udev' package is installed, to automatically create the
@@ -47,7 +45,8 @@ echo KERNEL==\"EtherCAT[0-9]*\", MODE=\"0664\" > /etc/udev/rules.d/99-EtherCAT.r
 Now you can start the EtherCAT master:
 
 ```bash
-/etc/init.d/ethercat start
+# systemctl start ethercat   # For systemd based distro
+# /etc/init.d/ethercat start # For init.d based distro
 ```
 
 Have a look at the [examples subdirectory](examples/) for some application

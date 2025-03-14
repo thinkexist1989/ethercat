@@ -24,7 +24,7 @@
 #-----------------------------------------------------------------------------
 
 src := @abs_srcdir@
-ccflags-y := -I@abs_top_builddir@
+ccflags-y := -I@abs_top_builddir@ -I@abs_srcdir@
 
 TOPDIR := $(src)/../..
 

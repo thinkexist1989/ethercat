@@ -562,6 +562,52 @@ EXTRA_DIST = \
 	regs-5.4-orig.h \
 	regs-6.1-ethercat.h \
 	regs-6.1-orig.h \
+	80003es2lan-6.4-ethercat.c \
+	80003es2lan-6.4-orig.c \
+	80003es2lan-6.4-ethercat.h \
+	80003es2lan-6.4-orig.h \
+	82571-6.4-ethercat.c \
+	82571-6.4-orig.c \
+	82571-6.4-ethercat.h \
+	82571-6.4-orig.h \
+	defines-6.4-ethercat.h \
+	defines-6.4-orig.h \
+	e1000e_trace-6.4-ethercat.h \
+	e1000e_trace-6.4-orig.h \
+	e1000-6.4-ethercat.h \
+	e1000-6.4-orig.h \
+	ethtool-6.4-ethercat.c \
+	ethtool-6.4-orig.c \
+	hw-6.4-ethercat.h \
+	hw-6.4-orig.h \
+	ich8lan-6.4-ethercat.c \
+	ich8lan-6.4-orig.c \
+	ich8lan-6.4-ethercat.h \
+	ich8lan-6.4-orig.h \
+	mac-6.4-ethercat.c \
+	mac-6.4-orig.c \
+	mac-6.4-ethercat.h \
+	mac-6.4-orig.h \
+	manage-6.4-ethercat.c \
+	manage-6.4-orig.c \
+	manage-6.4-ethercat.h \
+	manage-6.4-orig.h \
+	netdev-6.4-ethercat.c \
+	netdev-6.4-orig.c \
+	nvm-6.4-ethercat.c \
+	nvm-6.4-orig.c \
+	nvm-6.4-ethercat.h \
+	nvm-6.4-orig.h \
+	param-6.4-ethercat.c \
+	param-6.4-orig.c \
+	phy-6.4-ethercat.c \
+	phy-6.4-orig.c \
+	phy-6.4-ethercat.h \
+	phy-6.4-orig.h \
+	ptp-6.4-ethercat.c \
+	ptp-6.4-orig.c \
+	regs-6.4-ethercat.h \
+	regs-6.4-orig.h \
 	update.sh
 
 #-----------------------------------------------------------------------------

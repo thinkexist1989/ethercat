@@ -52,7 +52,8 @@ static void add_spaces(std::ostream &out, int const num)
 }
 
 template <typename Map, typename Func>
-static void map2Json(std::ostream &out, const Map &map, Func &&print_func, int indent = 0)
+static void map2Json(std::ostream &out, const Map &map, Func &&print_func,
+        int indent = 0)
 {
     indent += 4;
     out << "{";
@@ -69,7 +70,8 @@ static void map2Json(std::ostream &out, const Map &map, Func &&print_func, int i
             out << ",\n";
         }
         add_spaces(out, indent);
-        out << "\"0x" << std::hex << std::setfill('0') << std::setw(2 * sizeof(typename Map::key_type));
+        out << "\"0x" << std::hex << std::setfill('0')
+            << std::setw(2 * sizeof(typename Map::key_type));
         out << kv.first << "\": ";
         print_func(out, kv.second);
     }
@@ -102,7 +104,8 @@ Offset pdo::findEntry(uint16_t idx, uint8_t subindex) const
     return NotFound;
 }
 
-ec_domain::ec_domain(rtipc *rtipc, const char *prefix, ec_master_t *master) : rt_group(rtipc_create_group(rtipc, 1.0)), prefix(prefix), master(master)
+ec_domain::ec_domain(rtipc *rtipc, const char *prefix, ec_master_t *master):
+    rt_group(rtipc_create_group(rtipc, 1.0)), prefix(prefix), master(master)
 {
 }
 
@@ -117,7 +120,9 @@ int ec_domain::activate()
         slaves.insert(pdo.slave_address.getCombined());
         void *rt_pdo = nullptr;
         char buf[512];
-        const auto fmt = snprintf(buf, sizeof(buf), "%s/%d/%08X/%04X", prefix, master->getId(), pdo.slave_address.getCombined(), pdo.pdo_index);
+        const auto fmt = snprintf(buf, sizeof(buf), "%s/%d/%08X/%04X",
+                prefix, master->getId(), pdo.slave_address.getCombined(),
+                pdo.pdo_index);
         if (fmt < 0 || fmt >= (int)sizeof(buf))
         {
             return -ENOBUFS;
@@ -126,11 +131,14 @@ int ec_domain::activate()
         switch (pdo.dir)
         {
         case EC_DIR_OUTPUT:
-            rt_pdo = rtipc_txpdo(rt_group, buf, rtipc_uint8_T, data.data() + pdo.offset, pdo.size_bytes);
+            rt_pdo = rtipc_txpdo(rt_group, buf, rtipc_uint8_T,
+                    data.data() + pdo.offset, pdo.size_bytes);
             std::cerr << "Registering " << buf << " as Output\n";
             break;
         case EC_DIR_INPUT:
-            rt_pdo = rtipc_rxpdo(rt_group, buf, rtipc_uint8_T, data.data() + pdo.offset, pdo.size_bytes, connected.data() + idx);
+            rt_pdo = rtipc_rxpdo(rt_group, buf, rtipc_uint8_T,
+                    data.data() + pdo.offset, pdo.size_bytes,
+                    connected.data() + idx);
             std::cerr << "Registering " << buf << " as Input\n";
             break;
         default:
@@ -161,22 +169,26 @@ int ec_domain::queue()
     return 0;
 }
 
-ssize_t ec_domain::map(ec_slave_config const &config, unsigned int syncManager,
-                       uint16_t pdo_index)
+ssize_t ec_domain::map(ec_slave_config const &config,
+        unsigned int syncManager, uint16_t pdo_index)
 {
     if (activated_)
         return -1;
     for (const auto &pdo : mapped_pdos)
     {
-        if (pdo.slave_address == config.address && syncManager == pdo.syncManager && pdo_index == pdo.pdo_index)
+        if (pdo.slave_address == config.address
+                && syncManager == pdo.syncManager
+                && pdo_index == pdo.pdo_index)
         {
             // already mapped;
             return pdo.offset;
         }
     }
     const auto ans = data.size();
-    const auto size = config.sync_managers.at(syncManager).pdos.at(pdo_index).sizeInBytes();
-    mapped_pdos.emplace_back(ans, size, config.address, syncManager, pdo_index, config.sync_managers.at(syncManager).dir);
+    const auto size =
+        config.sync_managers.at(syncManager).pdos.at(pdo_index).sizeInBytes();
+    mapped_pdos.emplace_back(ans, size, config.address, syncManager,
+            pdo_index, config.sync_managers.at(syncManager).dir);
     data.resize(ans + size);
     return ans;
 }
@@ -192,6 +204,7 @@ int ecrt_domain_process(
 {
     return domain->process();
 }
+
 int ecrt_domain_queue(
     ec_domain_t *domain)
 {
@@ -226,7 +239,8 @@ int ec_master::activate()
             return -1;
         }
         out << "{\n    \"slaves\": ";
-        map2Json(out, slaves, [](std::ostream &out, const ec_slave_config &slave)
+        map2Json(out, slaves, [](std::ostream &out,
+                    const ec_slave_config &slave)
                  { slave.dumpJson(out, 8); }, 4);
         out << "\n}\n";
     }
@@ -275,10 +289,11 @@ ec_domain *ec_master::createDomain()
     domains.emplace_back(rt_ipc.get(), getPrefix(), this);
     return &domains.back();
 }
+
 int ecrt_master_link_state(
     const ec_master_t *master,    /**< EtherCAT master. */
-    unsigned int dev_idx,         /**< Index of the device (0 = main device, 1 =
-                                    first backup device, ...). */
+    unsigned int dev_idx,         /**< Index of the device (0 = main device,
+                                    1 = first backup device, ...). */
     ec_master_link_state_t *state /**< Structure to store the information.
                                    */
 )
@@ -342,19 +357,25 @@ ec_slave_config_t *ec_master::slave_config(
     const auto it = slaves.find(address);
     if (it != slaves.end())
     {
-        if (it->second.vendor_id == vendor_id && it->second.product_code == product_code)
+        if (it->second.vendor_id == vendor_id
+                && it->second.product_code == product_code)
             return &it->second;
         else
         {
-            std::cerr << "Attempted to reconfigure slave (" << alias << "," << position << ")!\n";
+            std::cerr << "Attempted to reconfigure slave (" << alias
+                << "," << position << ")!\n";
             return nullptr;
         }
     }
     else
     {
-        return &slaves.insert(std::make_pair<ec_address, ec_slave_config>(ec_address{address}, ec_slave_config{address, vendor_id, product_code})).first->second;
+        return &slaves.insert(std::make_pair<ec_address,
+                ec_slave_config>(ec_address{address},
+                    ec_slave_config{address, vendor_id,
+                    product_code})).first->second;
     }
 }
+
 int ecrt_master_state(
     const ec_master_t *master, /**< EtherCAT master. */
     ec_master_state_t *state   /**< Structure to store the information. */
@@ -379,6 +400,7 @@ uint32_t ecrt_master_sync_monitor_process(
 {
     return 32;
 }
+
 int ecrt_master_sync_reference_clock(
     ec_master_t *master /**< EtherCAT master. */
 )
@@ -400,6 +422,7 @@ int ecrt_master_sync_slave_clocks(
 {
     return 0;
 }
+
 void ecrt_release_master(ec_master_t *master)
 {
     delete master;
@@ -414,11 +437,20 @@ ec_master_t *ecrt_request_master(
 
 static const char *getName()
 {
+    static const char *default_name = "FakeEtherCAT";
+
     if (const auto ans = getenv("FAKE_EC_NAME"))
     {
         return ans;
     }
-    return "FakeEtherCAT";
+
+    std::cerr
+        << "\nThe environment variable \"FAKE_EC_NAME\" is not set.\n"
+        << "Using the default value \"" << default_name << "\".\n"
+        << "Please consider to set unique names when using multiple"
+        << " instances.\n\n";
+        
+    return default_name;
 }
 
 static int mkpath(const std::string &file_path)
@@ -454,7 +486,9 @@ static std::string getRtIpcDir(int idx)
     return ans;
 }
 
-ec_master::ec_master(int id) : rt_ipc_dir(getRtIpcDir(id)), rt_ipc_name(getName()), rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())), id_(id)
+ec_master::ec_master(int id):
+    rt_ipc_dir(getRtIpcDir(id)), rt_ipc_name(getName()),
+    rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())), id_(id)
 {
 }
 
@@ -467,6 +501,7 @@ int ecrt_slave_config_complete_sdo(
 {
     return ecrt_slave_config_sdo(sc, index, 0, data, size);
 }
+
 ec_sdo_request_t *ecrt_slave_config_create_sdo_request(
     ec_slave_config_t *sc, /**< Slave configuration. */
     uint16_t index,        /**< SDO index. */
@@ -476,6 +511,7 @@ ec_sdo_request_t *ecrt_slave_config_create_sdo_request(
 {
     return nullptr;
 }
+
 int ecrt_slave_config_dc(
     ec_slave_config_t *sc,    /**< Slave configuration. */
     uint16_t assign_activate, /**< AssignActivate word. */
@@ -487,6 +523,7 @@ int ecrt_slave_config_dc(
 {
     return 0;
 }
+
 int ecrt_slave_config_idn(
     ec_slave_config_t *sc, /**< Slave configuration. */
     uint8_t drive_no,      /**< Drive number. */
@@ -499,6 +536,7 @@ int ecrt_slave_config_idn(
 {
     return 0;
 }
+
 int ecrt_slave_config_pdos(
     ec_slave_config_t *sc,       /**< Slave configuration. */
     unsigned int n_syncs,        /**< Number of sync manager configurations in
@@ -526,7 +564,8 @@ int ecrt_slave_config_pdos(
                 return -1;
             }
             auto &out_pdo = manager.pdos[in_pdo.index];
-            for (unsigned int pdo_entry_idx = 0; pdo_entry_idx < in_pdo.n_entries; ++pdo_entry_idx)
+            for (unsigned int pdo_entry_idx = 0;
+                    pdo_entry_idx < in_pdo.n_entries; ++pdo_entry_idx)
             {
                 out_pdo.entries.push_back(in_pdo.entries[pdo_entry_idx]);
             }
@@ -535,6 +574,7 @@ int ecrt_slave_config_pdos(
 
     return 0;
 }
+
 int ecrt_domain_reg_pdo_entry_list(
     ec_domain_t *domain,                     /**< Domain. */
     const ec_pdo_entry_reg_t *pdo_entry_regs /**< Array of PDO
@@ -547,12 +587,14 @@ int ecrt_domain_reg_pdo_entry_list(
 
     for (reg = pdo_entry_regs; reg->index; reg++)
     {
-        if (!(sc = ecrt_master_slave_config(domain->getMaster(), reg->alias,
-                                            reg->position, reg->vendor_id, reg->product_code)))
+        if (!(sc = ecrt_master_slave_config(
+                        domain->getMaster(), reg->alias,
+                        reg->position, reg->vendor_id, reg->product_code)))
             return -ENOENT;
 
-        if ((ret = ecrt_slave_config_reg_pdo_entry(sc, reg->index,
-                                                   reg->subindex, domain, reg->bit_position)) < 0)
+        if ((ret = ecrt_slave_config_reg_pdo_entry(
+                        sc, reg->index, reg->subindex, domain,
+                        reg->bit_position)) < 0)
             return ret;
 
         *reg->offset = ret;
@@ -574,17 +616,20 @@ int ecrt_slave_config_reg_pdo_entry(
     {
         for (auto pdo_it : sync_it.second.pdos)
         {
-            const auto offset = pdo_it.second.findEntry(entry_index, entry_subindex);
+            const auto offset = pdo_it.second.findEntry(entry_index,
+                    entry_subindex);
             if (offset != NotFound)
             {
-                const auto domain_offset = domain->map(*sc, sync_it.first, pdo_it.first);
+                const auto domain_offset =
+                    domain->map(*sc, sync_it.first, pdo_it.first);
                 if (domain_offset != -1)
                 {
                     if (bit_position)
                         *bit_position = offset.bits;
                     else if (offset.bits)
                     {
-                        std::cerr << "Pdo Entry is not byte aligned but bit offset is ignored!\n";
+                        std::cerr << "Pdo Entry is not byte aligned"
+                            << " but bit offset is ignored!\n";
                         return -1;
                     }
                     return domain_offset + offset.bytes;
@@ -618,7 +663,8 @@ int ecrt_slave_config_sdo16(
 {
     uint8_t buf[sizeof(value)];
     memcpy(&buf, &value, sizeof(value));
-    return ecrt_slave_config_sdo(sc, sdo_index, sdo_subindex, buf, sizeof(buf));
+    return ecrt_slave_config_sdo(sc, sdo_index, sdo_subindex,
+            buf, sizeof(buf));
 }
 
 int ecrt_slave_config_sdo32(
@@ -630,7 +676,8 @@ int ecrt_slave_config_sdo32(
 {
     uint8_t buf[sizeof(value)];
     memcpy(&buf, &value, sizeof(value));
-    return ecrt_slave_config_sdo(sc, sdo_index, sdo_subindex, buf, sizeof(buf));
+    return ecrt_slave_config_sdo(sc, sdo_index, sdo_subindex,
+            buf, sizeof(buf));
 }
 
 int ecrt_slave_config_sdo(
@@ -641,7 +688,8 @@ int ecrt_slave_config_sdo(
     size_t size            /**< Size of the \a data. */
 )
 {
-    sc->sdos[sdo_address{index, subindex}] = std::basic_string<uint8_t>(data, data + size);
+    sc->sdos[sdo_address{index, subindex}] =
+        std::basic_string<uint8_t>(data, data + size);
     return 0;
 }
 
@@ -649,10 +697,12 @@ void ecrt_write_lreal(void *data, double const value)
 {
     memcpy(data, &value, sizeof(value));
 }
+
 void ecrt_write_real(void *data, float const value)
 {
     memcpy(data, &value, sizeof(value));
 }
+
 float ecrt_read_real(const void *data)
 {
     float ans;
@@ -677,13 +727,16 @@ void ec_slave_config::dumpJson(std::ostream &out, int indent) const
     out << "\"product_id\": " << product_code << ",\n";
     add_spaces(out, indent);
     out << "\"sdos\": ";
-    map2Json(out, sdos, [](std::ostream &out, const std::basic_string<uint8_t> &value)
-             {
-        out << "\"0x";
-        for (const auto s : value) {
-            out << std::hex << std::setfill('0') << std::setw(2) << (unsigned)s;
-        }
-        out << '"'; }, indent);
+    map2Json(out, sdos,
+            [](std::ostream &out, const std::basic_string<uint8_t> &value)
+            {
+                out << "\"0x";
+                for (const auto s : value) {
+                    out << std::hex << std::setfill('0')
+                    << std::setw(2) << (unsigned)s;
+                }
+                out << '"';
+            }, indent);
     out << '\n';
     add_spaces(out, indent - 4);
     out << "}";

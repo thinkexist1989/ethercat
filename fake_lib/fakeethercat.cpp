@@ -437,11 +437,20 @@ ec_master_t *ecrt_request_master(
 
 static const char *getName()
 {
+    static const char *default_name = "FakeEtherCAT";
+
     if (const auto ans = getenv("FAKE_EC_NAME"))
     {
         return ans;
     }
-    return "FakeEtherCAT";
+
+    std::cerr
+        << "\nThe environment variable \"FAKE_EC_NAME\" is not set.\n"
+        << "Using the default value \"" << default_name << "\".\n"
+        << "Please consider to set unique names when using multiple"
+        << " instances.\n\n";
+        
+    return default_name;
 }
 
 static int mkpath(const std::string &file_path)

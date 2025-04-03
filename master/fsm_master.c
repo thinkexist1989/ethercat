@@ -771,10 +771,8 @@ void ec_fsm_master_state_read_state(
     if (datagram->working_counter != 1) {
         if (!slave->error_flag) {
             slave->error_flag = 1;
-            EC_SLAVE_DBG(slave, 1, "Slave did not respond to state query. "
-                    "Re-scanning on next possibility...\n");
+            EC_SLAVE_DBG(slave, 1, "Slave did not respond to state query.\n");
         }
-        fsm->rescan_required = 1;
         ec_fsm_master_restart(fsm);
         return;
     }

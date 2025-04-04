@@ -421,7 +421,14 @@ static inline u32 igc_rss_type(const union igc_adv_rx_desc *rx_desc)
 #define IGC_RX_HTHRESH			8
 #define IGC_TX_PTHRESH			8
 #define IGC_TX_HTHRESH			1
-#define IGC_RX_WTHRESH			4
+static inline int igc_get_rx_wthresh(struct igc_adapter *adapter)
+{
+	if (get_ecdev(adapter)) {
+		return 1;
+	}
+	return 4;
+}
+#define IGC_RX_WTHRESH			igc_get_rx_wthresh(adapter)
 #define IGC_TX_WTHRESH			16
 
 #define IGC_RX_DMA_ATTR \

@@ -4,6 +4,20 @@ vim: spelllang=en spell tw=78
 
 -------------------------------------------------------------------------------
 
+Changes in 1.6.4:
+
+* igc: Set RX descriptor writeback threshold to 1
+* Avoid rescan on non-responding slave
+* Do not touch AL state of EoE slaves
+* Warn if FAKE_EC_NAME is not set
+* Added configuration switch to disable init.d files
+* Fixed FakeEtherCAT operation with muliple masters
+* Add UPDOWN_INTERFACES option to ethercat.conf
+* Improvements to the build system
+* Fix obsolete warnings on bootstrap
+* Explicitly check for pkg-config macros
+* Many documentation improvements (thanks to Nicola Fontana)
+
 Changes in 1.6.3:
 
 * Fix ccat for aarch64 >= 6.11.0

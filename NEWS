@@ -4,6 +4,10 @@ vim: spelllang=en spell tw=78
 
 -------------------------------------------------------------------------------
 
+Changes in 1.6.5:
+
+* Implemented interface changes of Linux 6.15.
+
 Changes in 1.6.4:
 
 * igc: Set RX descriptor writeback threshold to 1

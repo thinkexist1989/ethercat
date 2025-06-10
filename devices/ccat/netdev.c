@@ -862,8 +862,13 @@ static int ccat_eth_open(struct net_device *dev)
 	struct ccat_eth_priv *const priv = netdev_priv(dev);
 
 	if (!priv->ecdev) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
+		hrtimer_setup(&priv->poll_timer, poll_timer_callback,
+				CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+#else
 		hrtimer_init(&priv->poll_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 		priv->poll_timer.function = poll_timer_callback;
+#endif
 		hrtimer_start(&priv->poll_timer, POLL_TIME, HRTIMER_MODE_REL);
 	}
 	return 0;

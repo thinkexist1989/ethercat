@@ -1401,8 +1401,13 @@ void ec_master_nanosleep(const unsigned long nsecs)
     struct hrtimer_sleeper t;
     enum hrtimer_mode mode = HRTIMER_MODE_REL;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
+    hrtimer_setup(&t.timer, ec_master_nanosleep_wakeup,
+            CLOCK_MONOTONIC, mode);
+#else
     hrtimer_init(&t.timer, CLOCK_MONOTONIC, mode);
     t.timer.function = ec_master_nanosleep_wakeup;
+#endif
     t.task = current;
     hrtimer_set_expires(&t.timer, ktime_set(0, nsecs));
 

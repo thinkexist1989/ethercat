@@ -19,7 +19,7 @@
 #
 #-----------------------------------------------------------------------------
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.70])
 
 #
 # Release procedure
@@ -471,10 +471,8 @@ AM_CONDITIONAL(ENABLE_GENET, test "x$enablegenet" = "x1")
 AC_SUBST(ENABLE_GENET,[$enablegenet])
 
 AC_ARG_WITH([genet-kernel],
-    AC_HELP_STRING(
-        [--with-genet-kernel=<X.Y.Z>],
-        [genet kernel (only if differing)]
-    ),
+    AS_HELP_STRING([--with-genet-kernel=<X.Y.Z>],
+                   [genet kernel (only if differing)]),
     [
         kernelgenet=[$withval]
     ],
@@ -701,10 +699,8 @@ AM_CONDITIONAL(ENABLE_STMMAC, test "x$enablestmmac" = "x1")
 AC_SUBST(ENABLE_STMMAC, [$enablestmmac])
 
 AC_ARG_WITH([stmmac-kernel],
-    AC_HELP_STRING(
-        [--with-stmmac-kernel=<X.Y.Z>],
-        [stmmac kernel (only if differing)]
-    ),
+    AS_HELP_STRING([--with-stmmac-kernel=<X.Y.Z>],
+                   [stmmac kernel (only if differing)]),
     [
         kernelstmmac=[$withval]
     ],
@@ -816,10 +812,8 @@ AC_ARG_WITH([xenomai-dir],
 )
 
 AC_ARG_WITH([xenomai-config],
-    AC_HELP_STRING(
-        [--with-xenomai-config=<CMD>],
-        [Xenomai config invokation, default to xenomai-dir/bin/xeno-config]
-    ),
+    AS_HELP_STRING([--with-xenomai-config=<CMD>],
+                   [Xenomai config invokation, default to xenomai-dir/bin/xeno-config]),
     [
         xenomaiconfig=[$withval]
     ],

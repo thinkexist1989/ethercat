@@ -13,6 +13,7 @@ IGCDIR=drivers/net/ethernet/intel/igc
 
 FILES="igc_base.c igc_defines.h igc_diag.h igc_ethtool.c igc_hw.h igc_i225.h igc_mac.h igc_nvm.c  igc_phy.c  igc_ptp.c   igc_tsn.c  igc_xdp.c"
 FILES="$FILES igc_base.h igc_diag.c igc_dump.c igc.h igc_i225.c igc_mac.c igc_main.c igc_nvm.h igc_phy.h igc_regs.h igc_tsn.h igc_xdp.h"
+FILES="$FILES igc_leds.c"
 
 for f in $FILES; do
     echo $f

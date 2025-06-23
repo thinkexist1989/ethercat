@@ -730,9 +730,20 @@ if test "x${enablestmmac}" = "x1"; then
     fi
 
     AC_MSG_RESULT([$kernelstmmac])
+
+    AC_MSG_CHECKING([for stmmac_est.c])
+
+    if test -r "${srcdir}/devices/stmmac/stmmac_est-${kernelstmmac}-ethercat.c"; then
+        AC_MSG_RESULT([yes])
+        has_stmmac_est=1
+    else
+        AC_MSG_RESULT([no])
+        has_stmmac_est=0
+    fi
 fi
 
 AC_SUBST(KERNEL_STMMAC,[$kernelstmmac])
+AC_SUBST(HAS_STMMAC_EST,[$has_stmmac_est])
 
 #-----------------------------------------------------------------------------
 # CCAT driver

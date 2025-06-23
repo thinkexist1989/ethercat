@@ -4,8 +4,8 @@
 #include <linux/if_ether.h>
 #include <linux/delay.h>
 
-#include "e1000_mac-6.1-ethercat.h"
-#include "e1000_phy-6.1-ethercat.h"
+#include "e1000_mac-6.4-ethercat.h"
+#include "e1000_phy-6.4-ethercat.h"
 
 static s32  igb_phy_setup_autoneg(struct e1000_hw *hw);
 static void igb_phy_force_speed_duplex_setup(struct e1000_hw *hw,

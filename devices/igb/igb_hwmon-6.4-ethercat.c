@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 2007 - 2018 Intel Corporation. */
 
-#include "igb-6.1-ethercat.h"
-#include "e1000_82575-6.1-ethercat.h"
-#include "e1000_hw-6.1-ethercat.h"
+#include "igb-6.4-ethercat.h"
+#include "e1000_82575-6.4-ethercat.h"
+#include "e1000_hw-6.4-ethercat.h"
 
 #include <linux/module.h>
 #include <linux/types.h>

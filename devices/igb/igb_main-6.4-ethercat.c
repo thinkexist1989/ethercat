@@ -37,7 +37,7 @@
 #include <linux/dca.h>
 #endif
 #include <linux/i2c.h>
-#include "igb-6.1-ethercat.h"
+#include "igb-6.4-ethercat.h"
 
 enum queue_mode {
 	QUEUE_MODE_STRICT_PRIORITY,

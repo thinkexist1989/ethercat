@@ -4,8 +4,8 @@
 #include <linux/if_ether.h>
 #include <linux/delay.h>
 
-#include "e1000_mac-6.1-ethercat.h"
-#include "e1000_nvm-6.1-ethercat.h"
+#include "e1000_mac-6.4-ethercat.h"
+#include "e1000_nvm-6.4-ethercat.h"
 
 /**
  *  igb_raise_eec_clk - Raise EEPROM clock

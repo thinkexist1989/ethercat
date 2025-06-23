@@ -11,10 +11,10 @@
 #include <linux/if_ether.h>
 #include <linux/i2c.h>
 
-#include "e1000_mac-6.1-ethercat.h"
-#include "e1000_82575-6.1-ethercat.h"
-#include "e1000_i210-6.1-ethercat.h"
-#include "igb-6.1-ethercat.h"
+#include "e1000_mac-6.4-ethercat.h"
+#include "e1000_82575-6.4-ethercat.h"
+#include "e1000_i210-6.4-ethercat.h"
+#include "igb-6.4-ethercat.h"
 
 static s32  igb_get_invariants_82575(struct e1000_hw *);
 static s32  igb_acquire_phy_82575(struct e1000_hw *);

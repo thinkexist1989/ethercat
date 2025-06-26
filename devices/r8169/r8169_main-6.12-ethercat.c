@@ -4607,7 +4607,8 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
 		if (skb) {
 			pkts_compl++;
 			bytes_compl += skb->len;
-			napi_consume_skb(skb, budget);
+			if (!get_ecdev(tp))
+				napi_consume_skb(skb, budget);
 		}
 		dirty_tx++;
 	}

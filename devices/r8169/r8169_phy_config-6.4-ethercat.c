@@ -12,7 +12,7 @@
 #include <linux/delay.h>
 #include <linux/phy.h>
 
-#include "r8169-6.1-ethercat.h"
+#include "r8169-6.4-ethercat.h"
 
 typedef void (*rtl_phy_cfg_fct)(struct rtl8169_private *tp,
 				struct phy_device *phydev);

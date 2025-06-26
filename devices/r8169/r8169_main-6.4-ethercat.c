@@ -33,8 +33,8 @@
 #include <net/ip6_checksum.h>
 #include <net/netdev_queues.h>
 
-#include "r8169-6.1-ethercat.h"
-#include "r8169_firmware-6.1-ethercat.h"
+#include "r8169-6.4-ethercat.h"
+#include "r8169_firmware-6.4-ethercat.h"
 
 
 #include "../ecdev.h"

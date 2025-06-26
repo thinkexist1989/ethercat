@@ -22,7 +22,9 @@ for f in $KERNELDIR/drivers/net/ethernet/realtek/r8169*; do
     op=${b/\./-$PREVER-orig.}
     ep=${b/\./-$PREVER-ethercat.}
     diff -u $op $ep | patch -p1 $e
+    sed -i s/$PREVER-ethercat.h/$KERNELVER-ethercat.h/ $e
     git add $o $e
+    echo -e "\t$e \\\\\n\t$o \\\\" >> Makefile.am
 done
 
 echo "Remember to update Makefile.am!"

@@ -268,6 +268,11 @@ int igc_led_setup(struct igc_adapter *adapter)
 
 	mutex_init(&adapter->led_mutex);
 
+	if (get_ecdev(adapter)) {
+		adapter->leds = NULL;
+		return 0;
+	}
+
 	leds = kcalloc(IGC_NUM_LEDS, sizeof(*leds), GFP_KERNEL);
 	if (!leds)
 		return -ENOMEM;
@@ -294,6 +299,10 @@ void igc_led_free(struct igc_adapter *adapter)
 {
 	struct igc_led_classdev *leds = adapter->leds;
 	int i;
+
+	if (get_ecdev(adapter)) {
+		return;
+	}
 
 	for (i = 0; i < IGC_NUM_LEDS; i++)
 		led_classdev_unregister(&((leds + i)->led));

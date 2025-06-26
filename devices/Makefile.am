@@ -61,6 +61,8 @@ noinst_HEADERS = \
 	8139too-5.15-orig.c \
 	8139too-6.1-ethercat.c \
 	8139too-6.1-orig.c \
+	8139too-6.4-ethercat.c \
+	8139too-6.4-orig.c \
 	create_driver_table.py \
 	device_drivers_template.md \
 	e100-3.0-ethercat.c \

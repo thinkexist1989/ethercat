@@ -575,6 +575,8 @@ AC_ARG_WITH([igc-kernel],
     ]
 )
 
+has_igc_leds=0
+
 if test "x${enableigc}" = "x1"; then
     AC_MSG_CHECKING([for kernel for igc driver])
 
@@ -583,9 +585,20 @@ if test "x${enableigc}" = "x1"; then
     fi
 
     AC_MSG_RESULT([$kerneligc])
+
+    AC_MSG_CHECKING([for igc_leds.c])
+
+    if test -r "${srcdir}/devices/igc/igc_leds-${kerneligc}-ethercat.c"; then
+        AC_MSG_RESULT([yes])
+        has_igc_leds=1
+    else
+        AC_MSG_RESULT([no])
+        has_igc_leds=0
+    fi
 fi
 
 AC_SUBST(KERNEL_IGC,[$kerneligc])
+AC_SUBST(HAS_IGC_LEDS,[$has_igc_leds])
 
 #-----------------------------------------------------------------------------
 # r8169 driver
@@ -717,9 +730,20 @@ if test "x${enablestmmac}" = "x1"; then
     fi
 
     AC_MSG_RESULT([$kernelstmmac])
+
+    AC_MSG_CHECKING([for stmmac_est.c])
+
+    if test -r "${srcdir}/devices/stmmac/stmmac_est-${kernelstmmac}-ethercat.c"; then
+        AC_MSG_RESULT([yes])
+        has_stmmac_est=1
+    else
+        AC_MSG_RESULT([no])
+        has_stmmac_est=0
+    fi
 fi
 
 AC_SUBST(KERNEL_STMMAC,[$kernelstmmac])
+AC_SUBST(HAS_STMMAC_EST,[$has_stmmac_est])
 
 #-----------------------------------------------------------------------------
 # CCAT driver

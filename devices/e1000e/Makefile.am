@@ -68,6 +68,10 @@ EXTRA_DIST = \
 	80003es2lan-6.1-ethercat.h \
 	80003es2lan-6.1-orig.c \
 	80003es2lan-6.1-orig.h \
+	80003es2lan-6.12-ethercat.c \
+	80003es2lan-6.12-ethercat.h \
+	80003es2lan-6.12-orig.c \
+	80003es2lan-6.12-orig.h \
 	80003es2lan-6.4-ethercat.c \
 	80003es2lan-6.4-ethercat.h \
 	80003es2lan-6.4-orig.c \
@@ -120,6 +124,10 @@ EXTRA_DIST = \
 	82571-6.1-ethercat.h \
 	82571-6.1-orig.c \
 	82571-6.1-orig.h \
+	82571-6.12-ethercat.c \
+	82571-6.12-ethercat.h \
+	82571-6.12-orig.c \
+	82571-6.12-orig.h \
 	82571-6.4-ethercat.c \
 	82571-6.4-ethercat.h \
 	82571-6.4-orig.c \
@@ -152,6 +160,8 @@ EXTRA_DIST = \
 	defines-5.4-orig.h \
 	defines-6.1-ethercat.h \
 	defines-6.1-orig.h \
+	defines-6.12-ethercat.h \
+	defines-6.12-orig.h \
 	defines-6.4-ethercat.h \
 	defines-6.4-orig.h \
 	e1000-3.10-ethercat.h \
@@ -182,8 +192,12 @@ EXTRA_DIST = \
 	e1000-5.4-orig.h \
 	e1000-6.1-ethercat.h \
 	e1000-6.1-orig.h \
+	e1000-6.12-ethercat.h \
+	e1000-6.12-orig.h \
 	e1000-6.4-ethercat.h \
 	e1000-6.4-orig.h \
+	e1000e_trace-6.12-ethercat.h \
+	e1000e_trace-6.12-orig.h \
 	e1000e_trace-6.4-ethercat.h \
 	e1000e_trace-6.4-orig.h \
 	es2lan-3.2-ethercat.c \
@@ -216,6 +230,8 @@ EXTRA_DIST = \
 	ethtool-5.4-orig.c \
 	ethtool-6.1-ethercat.c \
 	ethtool-6.1-orig.c \
+	ethtool-6.12-ethercat.c \
+	ethtool-6.12-orig.c \
 	ethtool-6.4-ethercat.c \
 	ethtool-6.4-orig.c \
 	hw-3.10-ethercat.h \
@@ -246,6 +262,8 @@ EXTRA_DIST = \
 	hw-5.4-orig.h \
 	hw-6.1-ethercat.h \
 	hw-6.1-orig.h \
+	hw-6.12-ethercat.h \
+	hw-6.12-orig.h \
 	hw-6.4-ethercat.h \
 	hw-6.4-orig.h \
 	ich8lan-3.10-ethercat.c \
@@ -296,6 +314,10 @@ EXTRA_DIST = \
 	ich8lan-6.1-ethercat.h \
 	ich8lan-6.1-orig.c \
 	ich8lan-6.1-orig.h \
+	ich8lan-6.12-ethercat.c \
+	ich8lan-6.12-ethercat.h \
+	ich8lan-6.12-orig.c \
+	ich8lan-6.12-orig.h \
 	ich8lan-6.4-ethercat.c \
 	ich8lan-6.4-ethercat.h \
 	ich8lan-6.4-orig.c \
@@ -348,6 +370,10 @@ EXTRA_DIST = \
 	mac-6.1-ethercat.h \
 	mac-6.1-orig.c \
 	mac-6.1-orig.h \
+	mac-6.12-ethercat.c \
+	mac-6.12-ethercat.h \
+	mac-6.12-orig.c \
+	mac-6.12-orig.h \
 	mac-6.4-ethercat.c \
 	mac-6.4-ethercat.h \
 	mac-6.4-orig.c \
@@ -398,6 +424,10 @@ EXTRA_DIST = \
 	manage-6.1-ethercat.h \
 	manage-6.1-orig.c \
 	manage-6.1-orig.h \
+	manage-6.12-ethercat.c \
+	manage-6.12-ethercat.h \
+	manage-6.12-orig.c \
+	manage-6.12-orig.h \
 	manage-6.4-ethercat.c \
 	manage-6.4-ethercat.h \
 	manage-6.4-orig.c \
@@ -430,6 +460,8 @@ EXTRA_DIST = \
 	netdev-5.4-orig.c \
 	netdev-6.1-ethercat.c \
 	netdev-6.1-orig.c \
+	netdev-6.12-ethercat.c \
+	netdev-6.12-orig.c \
 	netdev-6.4-ethercat.c \
 	netdev-6.4-orig.c \
 	nvm-3.10-ethercat.c \
@@ -478,6 +510,10 @@ EXTRA_DIST = \
 	nvm-6.1-ethercat.h \
 	nvm-6.1-orig.c \
 	nvm-6.1-orig.h \
+	nvm-6.12-ethercat.c \
+	nvm-6.12-ethercat.h \
+	nvm-6.12-orig.c \
+	nvm-6.12-orig.h \
 	nvm-6.4-ethercat.c \
 	nvm-6.4-ethercat.h \
 	nvm-6.4-orig.c \
@@ -510,6 +546,8 @@ EXTRA_DIST = \
 	param-5.4-orig.c \
 	param-6.1-ethercat.c \
 	param-6.1-orig.c \
+	param-6.12-ethercat.c \
+	param-6.12-orig.c \
 	param-6.4-ethercat.c \
 	param-6.4-orig.c \
 	phy-3.10-ethercat.c \
@@ -560,6 +598,10 @@ EXTRA_DIST = \
 	phy-6.1-ethercat.h \
 	phy-6.1-orig.c \
 	phy-6.1-orig.h \
+	phy-6.12-ethercat.c \
+	phy-6.12-ethercat.h \
+	phy-6.12-orig.c \
+	phy-6.12-orig.h \
 	phy-6.4-ethercat.c \
 	phy-6.4-ethercat.h \
 	phy-6.4-orig.c \
@@ -584,6 +626,8 @@ EXTRA_DIST = \
 	ptp-5.4-orig.c \
 	ptp-6.1-ethercat.c \
 	ptp-6.1-orig.c \
+	ptp-6.12-ethercat.c \
+	ptp-6.12-orig.c \
 	ptp-6.4-ethercat.c \
 	ptp-6.4-orig.c \
 	regs-3.10-ethercat.h \
@@ -606,6 +650,8 @@ EXTRA_DIST = \
 	regs-5.4-orig.h \
 	regs-6.1-ethercat.h \
 	regs-6.1-orig.h \
+	regs-6.12-ethercat.h \
+	regs-6.12-orig.h \
 	regs-6.4-ethercat.h \
 	regs-6.4-orig.h \
 	update.sh

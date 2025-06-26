@@ -51,6 +51,11 @@ ifeq (@ENABLE_IGC@,1)
 		igc_ethtool-@KERNEL_IGC@-ethercat.o \
 		igc_nvm-@KERNEL_IGC@-ethercat.o
 
+	ifeq (@HAS_IGC_LEDS@,1)
+		ec_igc-objs += igc_leds-@KERNEL_IGC@-ethercat.o
+	endif
+
+
 ifeq (@ENABLE_DRIVER_RESOURCE_VERIFYING@,1)
 	ccflags-y := -DEC_ENABLE_DRIVER_RESOURCE_VERIFYING
 endif

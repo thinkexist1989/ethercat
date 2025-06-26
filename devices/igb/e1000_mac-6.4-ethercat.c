@@ -7,9 +7,9 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 
-#include "e1000_mac-6.1-ethercat.h"
+#include "e1000_mac-6.4-ethercat.h"
 
-#include "igb-6.1-ethercat.h"
+#include "igb-6.4-ethercat.h"
 
 static s32 igb_set_default_fc(struct e1000_hw *hw);
 static void igb_set_fc_watermarks(struct e1000_hw *hw);

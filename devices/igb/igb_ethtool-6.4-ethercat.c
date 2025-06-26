@@ -16,7 +16,7 @@
 #include <linux/highmem.h>
 #include <linux/mdio.h>
 
-#include "igb-6.1-ethercat.h"
+#include "igb-6.4-ethercat.h"
 
 struct igb_stats {
 	char stat_string[ETH_GSTRING_LEN];

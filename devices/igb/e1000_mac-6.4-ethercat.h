@@ -4,12 +4,12 @@
 #ifndef _E1000_MAC_H_
 #define _E1000_MAC_H_
 
-#include "e1000_hw-6.1-ethercat.h"
+#include "e1000_hw-6.4-ethercat.h"
 
-#include "e1000_phy-6.1-ethercat.h"
-#include "e1000_nvm-6.1-ethercat.h"
-#include "e1000_defines-6.1-ethercat.h"
-#include "e1000_i210-6.1-ethercat.h"
+#include "e1000_phy-6.4-ethercat.h"
+#include "e1000_nvm-6.4-ethercat.h"
+#include "e1000_defines-6.4-ethercat.h"
+#include "e1000_i210-6.4-ethercat.h"
 
 /* Functions that should not be called directly from drivers but can be used
  * by other files in this 'shared code'

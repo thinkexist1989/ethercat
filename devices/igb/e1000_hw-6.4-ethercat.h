@@ -9,8 +9,8 @@
 #include <linux/io.h>
 #include <linux/netdevice.h>
 
-#include "e1000_regs-6.1-ethercat.h"
-#include "e1000_defines-6.1-ethercat.h"
+#include "e1000_regs-6.4-ethercat.h"
+#include "e1000_defines-6.4-ethercat.h"
 
 struct e1000_hw;
 
@@ -287,10 +287,10 @@ struct e1000_host_mng_command_info {
 	u8 command_data[E1000_HI_MAX_MNG_DATA_LENGTH];
 };
 
-#include "e1000_mac-6.1-ethercat.h"
-#include "e1000_phy-6.1-ethercat.h"
-#include "e1000_nvm-6.1-ethercat.h"
-#include "e1000_mbx-6.1-ethercat.h"
+#include "e1000_mac-6.4-ethercat.h"
+#include "e1000_phy-6.4-ethercat.h"
+#include "e1000_nvm-6.4-ethercat.h"
+#include "e1000_mbx-6.4-ethercat.h"
 
 struct e1000_mac_operations {
 	s32 (*check_for_link)(struct e1000_hw *);

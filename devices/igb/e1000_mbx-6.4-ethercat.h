@@ -4,7 +4,7 @@
 #ifndef _E1000_MBX_H_
 #define _E1000_MBX_H_
 
-#include "e1000_hw-6.1-ethercat.h"
+#include "e1000_hw-6.4-ethercat.h"
 
 #define E1000_P2VMAILBOX_STS	0x00000001 /* Initiate message send to VF */
 #define E1000_P2VMAILBOX_ACK	0x00000002 /* Ack message recv'd from VF */

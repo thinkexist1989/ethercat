@@ -6,7 +6,7 @@
 #include <linux/pci.h>
 #include <linux/ptp_classify.h>
 
-#include "igb-6.1-ethercat.h"
+#include "igb-6.4-ethercat.h"
 
 #define INCVALUE_MASK		0x7fffffff
 #define ISGN			0x80000000

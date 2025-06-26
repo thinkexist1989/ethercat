@@ -76,6 +76,10 @@ EC_STMMAC_OBJS := \
 		stmmac_xdp-@KERNEL_STMMAC@-ethercat.o \
 		$(ec_stmmac-y)
 
+ifeq (@HAS_STMMAC_EST@,1)
+	EC_STMMAC_OBJS += stmmac_est-@KERNEL_STMMAC@-ethercat.o
+endif
+
 ec_stmmac-$(CONFIG_STMMAC_SELFTESTS) = \
 	stmmac_selftests-@KERNEL_STMMAC@-ethercat.o
 

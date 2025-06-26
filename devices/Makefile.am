@@ -31,8 +31,7 @@ SUBDIRS = \
 	r8169 \
 	stmmac
 
-# using HEADERS to enable tags target
-noinst_HEADERS = \
+EXTRA_DIST = \
 	8139too-3.0-ethercat.c \
 	8139too-3.0-orig.c \
 	8139too-3.10-ethercat.c \
@@ -118,6 +117,7 @@ noinst_HEADERS = \
 	r8169-3.8-ethercat.c \
 	r8169-3.8-orig.c \
 	r8169-4.4-ethercat.c \
-	r8169-4.4-orig.c
+	r8169-4.4-orig.c \
+	update.sh
 
 #------------------------------------------------------------------------------

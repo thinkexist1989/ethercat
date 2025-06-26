@@ -83,6 +83,7 @@ EXTRA_DIST = \
 	r8169_phy_config-6.12-ethercat.c \
 	r8169_phy_config-6.12-orig.c \
 	r8169_phy_config-6.4-ethercat.c \
-	r8169_phy_config-6.4-orig.c
+	r8169_phy_config-6.4-orig.c \
+	update.sh
 
 #-----------------------------------------------------------------------------

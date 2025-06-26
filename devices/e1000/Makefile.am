@@ -232,6 +232,7 @@ EXTRA_DIST = \
 	e1000_param-6.12-ethercat.c \
 	e1000_param-6.12-orig.c \
 	e1000_param-6.4-ethercat.c \
-	e1000_param-6.4-orig.c
+	e1000_param-6.4-orig.c \
+	update.sh
 
 #-----------------------------------------------------------------------------

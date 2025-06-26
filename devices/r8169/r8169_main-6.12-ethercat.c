@@ -4614,12 +4614,14 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
 	}
 
 	if (tp->dirty_tx != dirty_tx) {
-		dev_sw_netstats_tx_add(dev, pkts_compl, bytes_compl);
+		if (!get_ecdev(tp))
+			dev_sw_netstats_tx_add(dev, pkts_compl, bytes_compl);
 		WRITE_ONCE(tp->dirty_tx, dirty_tx);
 
-		netif_subqueue_completed_wake(dev, 0, pkts_compl, bytes_compl,
-					      rtl_tx_slots_avail(tp),
-					      R8169_TX_START_THRS);
+		if (!get_ecdev(tp))
+			netif_subqueue_completed_wake(dev, 0, pkts_compl, bytes_compl,
+					rtl_tx_slots_avail(tp),
+					R8169_TX_START_THRS);
 		/*
 		 * 8168 hack: TxPoll requests are lost when the Tx packets are
 		 * too close. Let's kick an extra TxPoll request when a burst

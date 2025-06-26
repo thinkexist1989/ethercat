@@ -6,7 +6,7 @@
  */
 
 #include <linux/bitfield.h>
-#include "e1000-ethercat.h"
+#include "e1000-6.12-ethercat.h"
 
 static s32 e1000_check_downshift(struct e1000_hw *hw);
 static s32 e1000_check_polarity(struct e1000_hw *hw,

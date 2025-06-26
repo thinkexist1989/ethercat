@@ -9013,7 +9013,6 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
 	struct igb_ring *rx_ring = q_vector->rx.ring;
 	u16 cleaned_count = igb_desc_unused(rx_ring);
 	struct sk_buff *skb = rx_ring->skb;
-	int cpu = smp_processor_id();
 	unsigned int xdp_xmit = 0;
 	struct netdev_queue *nq;
 	struct xdp_buff xdp;
@@ -9154,6 +9153,7 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
 
 	if (xdp_xmit & IGB_XDP_TX) {
 		struct igb_ring *tx_ring = igb_xdp_tx_queue_mapping(adapter);
+		int cpu = smp_processor_id();
 
 		nq = txring_txq(tx_ring);
 		__netif_tx_lock(nq, cpu);

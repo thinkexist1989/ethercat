@@ -23,6 +23,7 @@ for f in $KERNELDIR/drivers/net/ethernet/{realtek/8139too.c,intel/e100.c}; do
     ep=${b/\./-$PREVER-ethercat.}
     diff -u $op $ep | patch -p1 $e
     git add $o $e
+    echo -e "\t$e \\\\\n\t$o \\\\" >> Makefile.am
 done
 
 echo "Remember to update Makefile.am!"

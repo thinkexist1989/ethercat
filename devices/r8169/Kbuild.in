@@ -43,6 +43,10 @@ ifeq (@R8169_IN_SUBDIR@,1)
 		r8169_main-@KERNEL_R8169@-ethercat.o \
 		r8169_phy_config-@KERNEL_R8169@-ethercat.o
 
+	ifeq (@HAS_R8169_LEDS@,1)
+		ec_r8169-objs += r8169_leds-@KERNEL_IGC@-ethercat.o
+	endif
+
 	CFLAGS_r8169_main-@KERNEL_R8169@-ethercat.o = -DREV=$(REV)
 
 ifeq (@ENABLE_DRIVER_RESOURCE_VERIFYING@,1)

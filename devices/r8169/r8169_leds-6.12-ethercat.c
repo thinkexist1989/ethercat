@@ -10,7 +10,7 @@
 #include <linux/netdevice.h>
 #include <uapi/linux/uleds.h>
 
-#include "r8169.h"
+#include "r8169-6.12-ethercat.h"
 
 #define RTL8168_LED_CTRL_OPTION2	BIT(15)
 #define RTL8168_LED_CTRL_ACT		BIT(3)

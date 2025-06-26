@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 2007 - 2018 Intel Corporation. */
 
-#include "e1000_mbx-6.1-ethercat.h"
+#include "e1000_mbx-6.4-ethercat.h"
 
 /**
  *  igb_read_mbx - Reads a message from the mailbox

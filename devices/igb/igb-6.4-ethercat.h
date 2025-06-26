@@ -6,8 +6,8 @@
 #ifndef _IGB_H_
 #define _IGB_H_
 
-#include "e1000_mac-6.1-ethercat.h"
-#include "e1000_82575-6.1-ethercat.h"
+#include "e1000_mac-6.4-ethercat.h"
+#include "e1000_82575-6.4-ethercat.h"
 
 #include <linux/timecounter.h>
 #include <linux/net_tstamp.h>

@@ -24,6 +24,11 @@ for f in $FILES; do
     cp -v $o $e
     op=${f/\./-$PREVER-orig.}
     ep=${f/\./-$PREVER-ethercat.}
-    diff -u $op $ep | patch -p1 $e
+    diff -up $op $ep | patch -p1 --no-backup-if-mismatch $e
+    sed -i s/$PREVER-ethercat.h/$KERNELVER-ethercat.h/ $e
     git add $o $e
+    echo -e "\t$e \\" >> Makefile.am
+    echo -e "\t$o \\" >> Makefile.am
 done
+
+echo "Don't forget to update Makefile.am!"

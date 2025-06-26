@@ -8,8 +8,8 @@
 #include <linux/types.h>
 #include <linux/if_ether.h>
 
-#include "e1000_hw-6.1-ethercat.h"
-#include "e1000_i210-6.1-ethercat.h"
+#include "e1000_hw-6.4-ethercat.h"
+#include "e1000_i210-6.4-ethercat.h"
 
 static s32 igb_update_flash_i210(struct e1000_hw *hw);
 

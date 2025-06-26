@@ -11,7 +11,7 @@ KERNELVER=$3
 
 set -x
 
-for f in $KERNELDIR/drivers/net/ethernet/{realtek/8139too.c,realtek/r8169*.[ch],intel/e100.c}; do
+for f in $KERNELDIR/drivers/net/ethernet/{realtek/8139too.c,intel/e100.c}; do
     echo Driver $f
     b=$(basename $f)
     o=${b/\./-$KERNELVER-orig.}

@@ -661,7 +661,7 @@ if test "x${enable_r8169}" = "x1"; then
     AC_SUBST(R8169_IN_SUBDIR, [$found_subdir])
     AC_MSG_RESULT([$kernel_r8169])
 
-    AC_MSG_CHECKING([for igc_leds.c])
+    AC_MSG_CHECKING([for r8169_leds.c])
 
     if test -r "${srcdir}/devices/r8169/r8169_leds-${kernel_r8169}-ethercat.c"; then
         AC_MSG_RESULT([yes])

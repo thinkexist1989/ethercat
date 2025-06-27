@@ -295,9 +295,9 @@ void CommandPdos::etherlabConfig(
 
                 cout << var.str() << ".pdo = ["
                     << i << ", " << j << ", " << k << ", 0];" << endl;
-                cout << var.str() << ".pdo_data_type = "
-                    << 1000 + (unsigned int) entry.bit_length
-                    << ";" << endl << endl;
+                cout << var.str() << ".pdo_data_type = uint("
+                    << (unsigned int) entry.bit_length
+                    << ");" << endl << endl;
             }
         }
     }

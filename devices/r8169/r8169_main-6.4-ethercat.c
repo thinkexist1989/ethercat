@@ -4610,7 +4610,8 @@ static void rtl_task(struct work_struct *work)
 	if (test_and_clear_bit(RTL_FLAG_TASK_RESET_PENDING, tp->wk.flags)) {
 reset:
 		rtl_reset_work(tp);
-		netif_wake_queue(tp->dev);
+		if (!get_ecdev(tp))
+			netif_wake_queue(tp->dev);
 	}
 out_unlock:
 	rtnl_unlock();

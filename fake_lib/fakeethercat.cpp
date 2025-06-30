@@ -1,6 +1,7 @@
 /*****************************************************************************
  *
  *  Copyright (C) 2024  Bjarne von Horn, Ingenieurgemeinschaft IgH
+ *                2025  Florian Pose <fp@igh.de>
  *
  *  This file is part of the IgH EtherCAT master userspace library.
  *
@@ -32,11 +33,14 @@
 #include <ios>
 #include <sys/stat.h>
 
+/****************************************************************************/
+
 static std::ostream &operator<<(std::ostream &os, const sdo_address &a)
 {
     os << std::setfill('0') << std::hex << std::setw(6) << a.getCombined();
     return os;
 }
+
 static std::ostream &operator<<(std::ostream &os, const ec_address &a)
 {
     os << std::setfill('0') << std::hex << std::setw(8) << a.getCombined();
@@ -104,124 +108,9 @@ Offset pdo::findEntry(uint16_t idx, uint8_t subindex) const
     return NotFound;
 }
 
-ec_domain::ec_domain(rtipc *rtipc, const char *prefix, ec_master_t *master):
-    rt_group(rtipc_create_group(rtipc, 1.0)), prefix(prefix), master(master)
-{
-}
-
-int ec_domain::activate()
-{
-    std::unordered_set<uint32_t> slaves;
-
-    connected.resize(mapped_pdos.size());
-    size_t idx = 0;
-    for (const auto &pdo : mapped_pdos)
-    {
-        slaves.insert(pdo.slave_address.getCombined());
-        void *rt_pdo = nullptr;
-        char buf[512];
-        const auto fmt = snprintf(buf, sizeof(buf), "%s/%d/%08X/%04X",
-                prefix, master->getId(), pdo.slave_address.getCombined(),
-                pdo.pdo_index);
-        if (fmt < 0 || fmt >= (int)sizeof(buf))
-        {
-            return -ENOBUFS;
-        }
-
-        switch (pdo.dir)
-        {
-        case EC_DIR_OUTPUT:
-            rt_pdo = rtipc_txpdo(rt_group, buf, rtipc_uint8_T,
-                    data.data() + pdo.offset, pdo.size_bytes);
-            std::cerr << "Registering " << buf << " as Output\n";
-            break;
-        case EC_DIR_INPUT:
-            rt_pdo = rtipc_rxpdo(rt_group, buf, rtipc_uint8_T,
-                    data.data() + pdo.offset, pdo.size_bytes,
-                    connected.data() + idx);
-            std::cerr << "Registering " << buf << " as Input\n";
-            break;
-        default:
-            std::cerr << "Unknown direction " << pdo.dir << '\n';
-            return -1;
-        }
-        if (!rt_pdo)
-        {
-            std::cerr << "Failed to register RtIPC PDO\n";
-            return -1;
-        }
-        ++idx;
-    }
-    activated_ = true;
-    numSlaves = slaves.size();
-    return 0;
-}
-
-int ec_domain::process()
-{
-    rtipc_rx(rt_group);
-    return 0;
-}
-
-int ec_domain::queue()
-{
-    rtipc_tx(rt_group);
-    return 0;
-}
-
-ssize_t ec_domain::map(ec_slave_config const &config,
-        unsigned int syncManager, uint16_t pdo_index)
-{
-    if (activated_)
-        return -1;
-    for (const auto &pdo : mapped_pdos)
-    {
-        if (pdo.slave_address == config.address
-                && syncManager == pdo.syncManager
-                && pdo_index == pdo.pdo_index)
-        {
-            // already mapped;
-            return pdo.offset;
-        }
-    }
-    const auto ans = data.size();
-    const auto size =
-        config.sync_managers.at(syncManager).pdos.at(pdo_index).sizeInBytes();
-    mapped_pdos.emplace_back(ans, size, config.address, syncManager,
-            pdo_index, config.sync_managers.at(syncManager).dir);
-    data.resize(ans + size);
-    return ans;
-}
-
-uint8_t *ecrt_domain_data(
-    const ec_domain_t *domain)
-{
-    return domain->getData();
-}
-
-int ecrt_domain_process(
-    ec_domain_t *domain)
-{
-    return domain->process();
-}
-
-int ecrt_domain_queue(
-    ec_domain_t *domain)
-{
-    return domain->queue();
-}
-
-int ecrt_domain_state(
-    const ec_domain_t *domain, /**< Domain. */
-    ec_domain_state_t *state   /**< Pointer to a state object to store the
-                                 information. */
-)
-{
-    state->working_counter = domain->getNumSlaves();
-    state->redundancy_active = 0;
-    state->wc_state = EC_WC_COMPLETE;
-    return 0;
-}
+/*****************************************************************************
+ * Master
+ ****************************************************************************/
 
 int ec_master::activate()
 {
@@ -492,6 +381,10 @@ ec_master::ec_master(int id):
 {
 }
 
+/*****************************************************************************
+ * Slave Configuration
+ ****************************************************************************/
+
 int ecrt_slave_config_complete_sdo(
     ec_slave_config_t *sc, /**< Slave configuration. */
     uint16_t index,        /**< Index of the SDO to configure. */
@@ -553,8 +446,8 @@ int ecrt_slave_config_pdos(
         {
             return 0;
         }
-        auto &manager = sc->sync_managers[syncs[sync_idx].index];
-        manager.dir = syncs[sync_idx].dir;
+        auto &syncManager = sc->sync_managers[syncs[sync_idx].index];
+        syncManager.dir = syncs[sync_idx].dir;
         for (unsigned int i = 0; i < syncs[sync_idx].n_pdos; ++i)
         {
             const auto &in_pdo = syncs[sync_idx].pdos[i];
@@ -563,7 +456,7 @@ int ecrt_slave_config_pdos(
                 std::cerr << "Default mapping not supported.";
                 return -1;
             }
-            auto &out_pdo = manager.pdos[in_pdo.index];
+            auto &out_pdo = syncManager.pdos[in_pdo.index];
             for (unsigned int pdo_entry_idx = 0;
                     pdo_entry_idx < in_pdo.n_entries; ++pdo_entry_idx)
             {
@@ -575,32 +468,108 @@ int ecrt_slave_config_pdos(
     return 0;
 }
 
-int ecrt_domain_reg_pdo_entry_list(
-    ec_domain_t *domain,                     /**< Domain. */
-    const ec_pdo_entry_reg_t *pdo_entry_regs /**< Array of PDO
-                                               registrations. */
-)
+int ecrt_slave_config_sync_manager(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint8_t sync_index, /**< Sync manager index. Must be less
+                              than #EC_MAX_SYNC_MANAGERS. */
+        ec_direction_t direction, /**< Input/Output. */
+        ec_watchdog_mode_t watchdog_mode /** Watchdog mode. */
+        )
 {
-    const ec_pdo_entry_reg_t *reg;
-    ec_slave_config_t *sc;
-    int ret;
+    return 0;
+}
 
-    for (reg = pdo_entry_regs; reg->index; reg++)
-    {
-        if (!(sc = ecrt_master_slave_config(
-                        domain->getMaster(), reg->alias,
-                        reg->position, reg->vendor_id, reg->product_code)))
-            return -ENOENT;
+int ecrt_slave_config_watchdog(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint16_t watchdog_divider, /**< Number of 40 ns intervals (register
+                                     0x0400). Used as a base unit for all
+                                     slave watchdogs^. If set to zero, the
+                                     value is not written, so the default is
+                                     used. */
+        uint16_t watchdog_intervals /**< Number of base intervals for sync
+                                      manager watchdog (register 0x0420). If
+                                      set to zero, the value is not written,
+                                      so the default is used. */
+        )
+{
+    return 0;
+}
 
-        if ((ret = ecrt_slave_config_reg_pdo_entry(
-                        sc, reg->index, reg->subindex, domain,
-                        reg->bit_position)) < 0)
-            return ret;
+int ecrt_slave_config_pdo_assign_add(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint8_t sync_index, /**< Sync manager index. Must be less
+                              than #EC_MAX_SYNC_MANAGERS. */
+        uint16_t index /**< Index of the PDO to assign. */
+        )
+{
+    auto &syncManager = sc->sync_managers[sync_index];
+    syncManager.pdos[index];
+    return 0;
+}
 
-        *reg->offset = ret;
+int ecrt_slave_config_pdo_assign_clear(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint8_t sync_index /**< Sync manager index. Must be less
+                              than #EC_MAX_SYNC_MANAGERS. */
+        )
+{
+    auto &syncManager = sc->sync_managers[sync_index];
+    syncManager.pdos.clear();
+    return 0;
+}
+
+int ecrt_slave_config_pdo_mapping_add(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint16_t pdo_index, /**< Index of the PDO. */
+        uint16_t entry_index, /**< Index of the PDO entry to add to the PDO's
+                                mapping. */
+        uint8_t entry_subindex, /**< Subindex of the PDO entry to add to the
+                                  PDO's mapping. */
+        uint8_t entry_bit_length /**< Size of the PDO entry in bit. */
+        )
+{
+    for (auto smIt = sc->sync_managers.begin();
+            smIt != sc->sync_managers.end();
+            ++smIt) {
+
+        auto pdoIt = smIt->second.pdos.find(pdo_index);
+        if (pdoIt == smIt->second.pdos.end()) {
+            continue;
+        }
+
+        ec_pdo_entry_info_t entry_info;
+        entry_info.index = entry_index;
+        entry_info.subindex = entry_subindex;
+        entry_info.bit_length = entry_bit_length;
+        pdoIt->second.entries.push_back(entry_info);
+        return 0;
     }
 
-    return 0;
+    std::cerr << __func__ << "(): PDO " << std::hex << pdo_index
+        << " not found." << std::endl;
+    return -1;
+}
+
+int ecrt_slave_config_pdo_mapping_clear(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint16_t pdo_index /**< Index of the PDO. */
+        )
+{
+    for (auto smIt = sc->sync_managers.begin();
+            smIt != sc->sync_managers.end();
+            ++smIt) {
+        auto pdoIt = smIt->second.pdos.find(pdo_index);
+        if (pdoIt == smIt->second.pdos.end()) {
+            continue;
+        }
+
+        pdoIt->second.entries.clear();
+        return 0;
+    }
+
+    std::cerr << __func__ << "(): PDO " << std::hex << pdo_index
+        << " not found." << std::endl;
+    return -1;
 }
 
 int ecrt_slave_config_reg_pdo_entry(
@@ -693,6 +662,161 @@ int ecrt_slave_config_sdo(
     return 0;
 }
 
+/*****************************************************************************
+ * Domain
+ ****************************************************************************/
+
+int ecrt_domain_reg_pdo_entry_list(
+    ec_domain_t *domain,                     /**< Domain. */
+    const ec_pdo_entry_reg_t *pdo_entry_regs /**< Array of PDO
+                                               registrations. */
+)
+{
+    const ec_pdo_entry_reg_t *reg;
+    ec_slave_config_t *sc;
+    int ret;
+
+    for (reg = pdo_entry_regs; reg->index; reg++)
+    {
+        if (!(sc = ecrt_master_slave_config(
+                        domain->getMaster(), reg->alias,
+                        reg->position, reg->vendor_id, reg->product_code)))
+            return -ENOENT;
+
+        if ((ret = ecrt_slave_config_reg_pdo_entry(
+                        sc, reg->index, reg->subindex, domain,
+                        reg->bit_position)) < 0)
+            return ret;
+
+        *reg->offset = ret;
+    }
+
+    return 0;
+}
+
+uint8_t *ecrt_domain_data(
+    const ec_domain_t *domain)
+{
+    return domain->getData();
+}
+
+int ecrt_domain_process(
+    ec_domain_t *domain)
+{
+    return domain->process();
+}
+
+int ecrt_domain_queue(
+    ec_domain_t *domain)
+{
+    return domain->queue();
+}
+
+int ecrt_domain_state(
+    const ec_domain_t *domain, /**< Domain. */
+    ec_domain_state_t *state   /**< Pointer to a state object to store the
+                                 information. */
+)
+{
+    state->working_counter = domain->getNumSlaves();
+    state->redundancy_active = 0;
+    state->wc_state = EC_WC_COMPLETE;
+    return 0;
+}
+
+ec_domain::ec_domain(rtipc *rtipc, const char *prefix, ec_master_t *master):
+    rt_group(rtipc_create_group(rtipc, 1.0)), prefix(prefix), master(master)
+{
+}
+
+int ec_domain::activate()
+{
+    std::unordered_set<uint32_t> slaves;
+
+    connected.resize(mapped_pdos.size());
+    size_t idx = 0;
+    for (const auto &pdo : mapped_pdos)
+    {
+        slaves.insert(pdo.slave_address.getCombined());
+        void *rt_pdo = nullptr;
+        char buf[512];
+        const auto fmt = snprintf(buf, sizeof(buf), "%s/%d/%08X/%04X",
+                prefix, master->getId(), pdo.slave_address.getCombined(),
+                pdo.pdo_index);
+        if (fmt < 0 || fmt >= (int)sizeof(buf))
+        {
+            return -ENOBUFS;
+        }
+
+        switch (pdo.dir)
+        {
+        case EC_DIR_OUTPUT:
+            rt_pdo = rtipc_txpdo(rt_group, buf, rtipc_uint8_T,
+                    data.data() + pdo.offset, pdo.size_bytes);
+            std::cerr << "Registering " << buf << " as Output\n";
+            break;
+        case EC_DIR_INPUT:
+            rt_pdo = rtipc_rxpdo(rt_group, buf, rtipc_uint8_T,
+                    data.data() + pdo.offset, pdo.size_bytes,
+                    connected.data() + idx);
+            std::cerr << "Registering " << buf << " as Input\n";
+            break;
+        default:
+            std::cerr << "Unknown direction " << pdo.dir << '\n';
+            return -1;
+        }
+        if (!rt_pdo)
+        {
+            std::cerr << "Failed to register RtIPC PDO\n";
+            return -1;
+        }
+        ++idx;
+    }
+    activated_ = true;
+    numSlaves = slaves.size();
+    return 0;
+}
+
+int ec_domain::process()
+{
+    rtipc_rx(rt_group);
+    return 0;
+}
+
+int ec_domain::queue()
+{
+    rtipc_tx(rt_group);
+    return 0;
+}
+
+ssize_t ec_domain::map(ec_slave_config const &config,
+        unsigned int syncManager, uint16_t pdo_index)
+{
+    if (activated_)
+        return -1;
+    for (const auto &pdo : mapped_pdos)
+    {
+        if (pdo.slave_address == config.address
+                && syncManager == pdo.syncManager
+                && pdo_index == pdo.pdo_index)
+        {
+            // already mapped;
+            return pdo.offset;
+        }
+    }
+    const auto ans = data.size();
+    const auto size =
+        config.sync_managers.at(syncManager).pdos.at(pdo_index).sizeInBytes();
+    mapped_pdos.emplace_back(ans, size, config.address, syncManager,
+            pdo_index, config.sync_managers.at(syncManager).dir);
+    data.resize(ans + size);
+    return ans;
+}
+
+/*****************************************************************************
+ * Helpers
+ ****************************************************************************/
+
 void ecrt_write_lreal(void *data, double const value)
 {
     memcpy(data, &value, sizeof(value));
@@ -716,6 +840,8 @@ double ecrt_read_lreal(const void *data)
     memcpy(&ans, data, sizeof(ans));
     return ans;
 }
+
+/****************************************************************************/
 
 void ec_slave_config::dumpJson(std::ostream &out, int indent) const
 {
@@ -741,3 +867,5 @@ void ec_slave_config::dumpJson(std::ostream &out, int indent) const
     add_spaces(out, indent - 4);
     out << "}";
 }
+
+/****************************************************************************/

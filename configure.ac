@@ -82,7 +82,7 @@ else
 fi
 
 AM_CONDITIONAL(ENABLE_KERNEL, test "x$enablekernel" = "x1")
-AC_SUBST(ENABLE_KERNEL,[$enablekernel])
+AC_SUBST(ENABLE_KERNEL, [$enablekernel])
 
 #-----------------------------------------------------------------------------
 # Linux sources
@@ -141,7 +141,7 @@ fi
 # Extract numbers from kernel release
 linuxversion=`echo $kernelrelease | grep -oE "$regex"`
 
-AC_SUBST(LINUX_SOURCE_DIR,[$sourcedir])
+AC_SUBST(LINUX_SOURCE_DIR, [$sourcedir])
 AC_MSG_RESULT([$LINUX_SOURCE_DIR (Kernel $linuxversion)])
 
 fi
@@ -156,7 +156,7 @@ AC_ARG_WITH([module-dir],
     [moddir=[$withval]],
     [moddir="ethercat"]
 )
-AC_SUBST(INSTALL_MOD_DIR,[$moddir])
+AC_SUBST(INSTALL_MOD_DIR, [$moddir])
 
 AC_MSG_CHECKING([for Linux modules installation directory])
 AC_MSG_RESULT([$INSTALL_MOD_DIR])
@@ -190,7 +190,7 @@ else
 fi
 
 AM_CONDITIONAL(ENABLE_DRIVER_RESOURCE_VERIFYING, test "x$enableverifying" = "x1")
-AC_SUBST(ENABLE_DRIVER_RESOURCE_VERIFYING,[$enableverifying])
+AC_SUBST(ENABLE_DRIVER_RESOURCE_VERIFYING, [$enableverifying])
 
 #-----------------------------------------------------------------------------
 # Generic Ethernet driver
@@ -213,7 +213,7 @@ AC_ARG_ENABLE([generic],
 )
 
 AM_CONDITIONAL(ENABLE_GENERIC, test "x$enablegeneric" = "x1")
-AC_SUBST(ENABLE_GENERIC,[$enablegeneric])
+AC_SUBST(ENABLE_GENERIC, [$enablegeneric])
 
 #-----------------------------------------------------------------------------
 # 8139too driver
@@ -236,7 +236,7 @@ AC_ARG_ENABLE([8139too],
 )
 
 AM_CONDITIONAL(ENABLE_8139TOO, test "x$enable8139too" = "x1")
-AC_SUBST(ENABLE_8139TOO,[$enable8139too])
+AC_SUBST(ENABLE_8139TOO, [$enable8139too])
 
 AC_ARG_WITH([8139too-kernel],
     AS_HELP_STRING([--with-8139too-kernel=<X.Y.Z>],
@@ -266,7 +266,7 @@ if test "x${enable8139too}" = "x1"; then
     AC_MSG_RESULT([$kernel8139too])
 fi
 
-AC_SUBST(KERNEL_8139TOO,[$kernel8139too])
+AC_SUBST(KERNEL_8139TOO, [$kernel8139too])
 
 #-----------------------------------------------------------------------------
 # e100 driver
@@ -289,7 +289,7 @@ AC_ARG_ENABLE([e100],
 )
 
 AM_CONDITIONAL(ENABLE_E100, test "x$enablee100" = "x1")
-AC_SUBST(ENABLE_E100,[$enablee100])
+AC_SUBST(ENABLE_E100, [$enablee100])
 
 AC_ARG_WITH([e100-kernel],
     AS_HELP_STRING([--with-e100-kernel=<X.Y.Z>],
@@ -319,7 +319,7 @@ if test "x${enablee100}" = "x1"; then
     AC_MSG_RESULT([$kernele100])
 fi
 
-AC_SUBST(KERNEL_E100,[$kernele100])
+AC_SUBST(KERNEL_E100, [$kernele100])
 
 #-----------------------------------------------------------------------------
 # e1000 driver
@@ -342,7 +342,7 @@ AC_ARG_ENABLE([e1000],
 )
 
 AM_CONDITIONAL(ENABLE_E1000, test "x$enablee1000" = "x1")
-AC_SUBST(ENABLE_E1000,[$enablee1000])
+AC_SUBST(ENABLE_E1000, [$enablee1000])
 
 AC_ARG_WITH([e1000-kernel],
     AS_HELP_STRING([--with-e1000-kernel=<X.Y.Z>],
@@ -372,7 +372,7 @@ if test "x${enablee1000}" = "x1"; then
     AC_MSG_RESULT([$kernele1000])
 fi
 
-AC_SUBST(KERNEL_E1000,[$kernele1000])
+AC_SUBST(KERNEL_E1000, [$kernele1000])
 
 #-----------------------------------------------------------------------------
 # e1000e driver
@@ -395,7 +395,7 @@ AC_ARG_ENABLE([e1000e],
 )
 
 AM_CONDITIONAL(ENABLE_E1000E, test "x$enablee1000e" = "x1")
-AC_SUBST(ENABLE_E1000E,[$enablee1000e])
+AC_SUBST(ENABLE_E1000E, [$enablee1000e])
 
 AC_ARG_WITH([e1000e-kernel],
     AS_HELP_STRING([--with-e1000e-kernel=<X.Y.Z>],
@@ -444,7 +444,7 @@ if test "x${enablee1000e}" = "x1"; then
 
 fi
 
-AC_SUBST(KERNEL_E1000E,[$kernele1000e])
+AC_SUBST(KERNEL_E1000E, [$kernele1000e])
 AC_SUBST(E1000E_LAYOUT, [$e1000elayout])
 
 #-----------------------------------------------------------------------------
@@ -468,7 +468,7 @@ AC_ARG_ENABLE([genet],
 )
 
 AM_CONDITIONAL(ENABLE_GENET, test "x$enablegenet" = "x1")
-AC_SUBST(ENABLE_GENET,[$enablegenet])
+AC_SUBST(ENABLE_GENET, [$enablegenet])
 
 AC_ARG_WITH([genet-kernel],
     AS_HELP_STRING([--with-genet-kernel=<X.Y.Z>],
@@ -491,7 +491,7 @@ if test "x${enablegenet}" = "x1"; then
     AC_MSG_RESULT([$kernelgenet])
 fi
 
-AC_SUBST(KERNEL_GENET,[$kernelgenet])
+AC_SUBST(KERNEL_GENET, [$kernelgenet])
 
 #-----------------------------------------------------------------------------
 # igb driver
@@ -514,7 +514,7 @@ AC_ARG_ENABLE([igb],
 )
 
 AM_CONDITIONAL(ENABLE_IGB, test "x$enableigb" = "x1")
-AC_SUBST(ENABLE_IGB,[$enableigb])
+AC_SUBST(ENABLE_IGB, [$enableigb])
 
 AC_ARG_WITH([igb-kernel],
     AS_HELP_STRING([--with-igb-kernel=<X.Y.Z>],
@@ -538,7 +538,7 @@ if test "x${enableigb}" = "x1"; then
     AC_MSG_RESULT([$kerneligb])
 fi
 
-AC_SUBST(KERNEL_IGB,[$kerneligb])
+AC_SUBST(KERNEL_IGB, [$kerneligb])
 
 #-----------------------------------------------------------------------------
 # igc driver
@@ -561,7 +561,7 @@ AC_ARG_ENABLE([igc],
 )
 
 AM_CONDITIONAL(ENABLE_IGC, test "x$enableigc" = "x1")
-AC_SUBST(ENABLE_IGC,[$enableigc])
+AC_SUBST(ENABLE_IGC, [$enableigc])
 
 AC_ARG_WITH([igc-kernel],
     AS_HELP_STRING([--with-igc-kernel=<X.Y.Z>],
@@ -597,12 +597,14 @@ if test "x${enableigc}" = "x1"; then
     fi
 fi
 
-AC_SUBST(KERNEL_IGC,[$kerneligc])
-AC_SUBST(HAS_IGC_LEDS,[$has_igc_leds])
+AC_SUBST(KERNEL_IGC, [$kerneligc])
+AC_SUBST(HAS_IGC_LEDS, [$has_igc_leds])
 
 #-----------------------------------------------------------------------------
 # r8169 driver
 #-----------------------------------------------------------------------------
+
+has_r8169_leds=0
 
 AC_ARG_ENABLE([r8169],
     AS_HELP_STRING([--enable-r8169],
@@ -621,7 +623,7 @@ AC_ARG_ENABLE([r8169],
 )
 
 AM_CONDITIONAL(ENABLE_R8169, test "x$enable_r8169" = "x1")
-AC_SUBST(ENABLE_R8169,[$enable_r8169])
+AC_SUBST(ENABLE_R8169, [$enable_r8169])
 
 AC_ARG_WITH([r8169-kernel],
     AS_HELP_STRING([--with-r8169-kernel=<X.Y.Z>],
@@ -658,9 +660,20 @@ if test "x${enable_r8169}" = "x1"; then
 
     AC_SUBST(R8169_IN_SUBDIR, [$found_subdir])
     AC_MSG_RESULT([$kernel_r8169])
+
+    AC_MSG_CHECKING([for r8169_leds.c])
+
+    if test -r "${srcdir}/devices/r8169/r8169_leds-${kernel_r8169}-ethercat.c"; then
+        AC_MSG_RESULT([yes])
+        has_r8169_leds=1
+    else
+        AC_MSG_RESULT([no])
+        has_r8169_leds=0
+    fi
 fi
 
-AC_SUBST(KERNEL_R8169,[$kernel_r8169])
+AC_SUBST(KERNEL_R8169, [$kernel_r8169])
+AC_SUBST(HAS_R8169_LEDS, [$has_r8169_leds])
 
 #-----------------------------------------------------------------------------
 # stmmac-pci and dwmac-intel driver
@@ -686,7 +699,7 @@ AC_ARG_ENABLE([stmmac-pci],
 )
 
 AM_CONDITIONAL(ENABLE_STMMACPCI, test "x$enablestmmacpci" = "x1")
-AC_SUBST(ENABLE_STMMACPCI,[$enablestmmacpci])
+AC_SUBST(ENABLE_STMMACPCI, [$enablestmmacpci])
 
 AC_ARG_ENABLE([dwmac-intel],
     AS_HELP_STRING([--enable-dwmac-intel],
@@ -706,7 +719,7 @@ AC_ARG_ENABLE([dwmac-intel],
 )
 
 AM_CONDITIONAL(ENABLE_DWMACINTEL, test "x$enabledwmacintel" = "x1")
-AC_SUBST(ENABLE_DWMACINTEL,[$enabledwmacintel])
+AC_SUBST(ENABLE_DWMACINTEL, [$enabledwmacintel])
 
 AM_CONDITIONAL(ENABLE_STMMAC, test "x$enablestmmac" = "x1")
 AC_SUBST(ENABLE_STMMAC, [$enablestmmac])
@@ -742,8 +755,8 @@ if test "x${enablestmmac}" = "x1"; then
     fi
 fi
 
-AC_SUBST(KERNEL_STMMAC,[$kernelstmmac])
-AC_SUBST(HAS_STMMAC_EST,[$has_stmmac_est])
+AC_SUBST(KERNEL_STMMAC, [$kernelstmmac])
+AC_SUBST(HAS_STMMAC_EST, [$has_stmmac_est])
 
 #-----------------------------------------------------------------------------
 # CCAT driver
@@ -774,7 +787,7 @@ else
 fi
 
 AM_CONDITIONAL(ENABLE_CCAT, test "x$enableccat" = "x1")
-AC_SUBST(ENABLE_CCAT,[$enableccat])
+AC_SUBST(ENABLE_CCAT, [$enableccat])
 
 #-----------------------------------------------------------------------------
 # RTAI path (optional)
@@ -809,14 +822,14 @@ else
     rtai_kernel_cflags=`$rtaidir/bin/rtai-config --kernel-cflags`
 fi
 
-AC_SUBST(RTAI_DIR,[$rtaidir])
+AC_SUBST(RTAI_DIR, [$rtaidir])
 AM_CONDITIONAL(ENABLE_RTAI, test "x$rtai" = "x1")
-AC_SUBST(ENABLE_RTAI,[$rtai])
+AC_SUBST(ENABLE_RTAI, [$rtai])
 
-AC_SUBST(RTAI_LXRT_CFLAGS,[$rtai_lxrt_cflags])
-AC_SUBST(RTAI_LXRT_LDFLAGS,[$rtai_lxrt_ldflags])
-AC_SUBST(RTAI_MODULE_DIR,[$rtai_module_dir])
-AC_SUBST(RTAI_KERNEL_CFLAGS,[$rtai_kernel_cflags])
+AC_SUBST(RTAI_LXRT_CFLAGS, [$rtai_lxrt_cflags])
+AC_SUBST(RTAI_LXRT_LDFLAGS, [$rtai_lxrt_ldflags])
+AC_SUBST(RTAI_MODULE_DIR, [$rtai_module_dir])
+AC_SUBST(RTAI_KERNEL_CFLAGS, [$rtai_kernel_cflags])
 
 #-----------------------------------------------------------------------------
 # Xenomai path (optional)
@@ -880,20 +893,20 @@ else
     xeno_rtdm_cflags=`$xenomaiconfig --skin rtdm --cflags`
 fi
 
-AC_SUBST(XENOMAI_DIR,[$xenomaidir])
+AC_SUBST(XENOMAI_DIR, [$xenomaidir])
 AM_CONDITIONAL(ENABLE_XENOMAI, test "x$xeno" = "x1")
-AC_SUBST(ENABLE_XENOMAI,[$xeno])
+AC_SUBST(ENABLE_XENOMAI, [$xeno])
 AM_CONDITIONAL(ENABLE_XENOMAI_V3, test "x$xeno_v3" = "x1")
-AC_SUBST(ENABLE_XENOMAI_V3,[$xeno_v3])
+AC_SUBST(ENABLE_XENOMAI_V3, [$xeno_v3])
 
-AC_SUBST(XENOMAI_ALCHEMY_CFLAGS,[$xeno_alchemy_cflags])
-AC_SUBST(XENOMAI_ALCHEMY_LDFLAGS,[$xeno_alchemy_ldflags])
-AC_SUBST(XENOMAI_NATIVE_CFLAGS,[$xeno_native_cflags])
-AC_SUBST(XENOMAI_NATIVE_LDFLAGS,[$xeno_native_ldflags])
-AC_SUBST(XENOMAI_POSIX_CFLAGS,[$xeno_posix_cflags])
-AC_SUBST(XENOMAI_POSIX_LDFLAGS,[$xeno_posix_ldflags])
-AC_SUBST(XENOMAI_RTDM_CFLAGS,[$xeno_rtdm_cflags])
-AC_SUBST(XENOMAI_RTDM_LDFLAGS,[$xeno_rtdm_ldflags])
+AC_SUBST(XENOMAI_ALCHEMY_CFLAGS, [$xeno_alchemy_cflags])
+AC_SUBST(XENOMAI_ALCHEMY_LDFLAGS, [$xeno_alchemy_ldflags])
+AC_SUBST(XENOMAI_NATIVE_CFLAGS, [$xeno_native_cflags])
+AC_SUBST(XENOMAI_NATIVE_LDFLAGS, [$xeno_native_ldflags])
+AC_SUBST(XENOMAI_POSIX_CFLAGS, [$xeno_posix_cflags])
+AC_SUBST(XENOMAI_POSIX_LDFLAGS, [$xeno_posix_ldflags])
+AC_SUBST(XENOMAI_RTDM_CFLAGS, [$xeno_rtdm_cflags])
+AC_SUBST(XENOMAI_RTDM_LDFLAGS, [$xeno_rtdm_ldflags])
 
 #-----------------------------------------------------------------------------
 # RTDM interface (optional)
@@ -925,7 +938,7 @@ else
 fi
 
 AM_CONDITIONAL(ENABLE_RTDM, test "x$rtdm" = "x1")
-AC_SUBST(ENABLE_RTDM,[$rtdm])
+AC_SUBST(ENABLE_RTDM, [$rtdm])
 
 #-----------------------------------------------------------------------------
 # Debug interface
@@ -957,7 +970,7 @@ else
 fi
 
 AM_CONDITIONAL(ENABLE_DEBUG_IF, test "x$dbg" = "x1")
-AC_SUBST(ENABLE_DEBUG_IF,[$dbg])
+AC_SUBST(ENABLE_DEBUG_IF, [$dbg])
 
 #-----------------------------------------------------------------------------
 # Debug ring
@@ -1018,7 +1031,7 @@ else
 fi
 
 AM_CONDITIONAL(ENABLE_EOE, test "x$eoe" = "x1")
-AC_SUBST(ENABLE_EOE,[$eoe])
+AC_SUBST(ENABLE_EOE, [$eoe])
 
 #-----------------------------------------------------------------------------
 # CPU timestamp counter support
@@ -1227,7 +1240,7 @@ else
 fi
 
 AM_CONDITIONAL(ENABLE_TTY, test "x$tty" = "x1")
-AC_SUBST(ENABLE_TTY,[$tty])
+AC_SUBST(ENABLE_TTY, [$tty])
 
 #-----------------------------------------------------------------------------
 # Slave identification wildcards
@@ -1384,7 +1397,7 @@ case "${with_systemdsystemunitdir}" in
 esac
 
 AM_CONDITIONAL(HAVE_SYSTEMD, test "x$with_systemdsystemunitdir" != "x")
-AC_SUBST(systemdsystemunitdir,[$with_systemdsystemunitdir])
+AC_SUBST(systemdsystemunitdir, [$with_systemdsystemunitdir])
 
 #-----------------------------------------------------------------------------
 

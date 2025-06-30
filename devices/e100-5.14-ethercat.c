@@ -3124,7 +3124,10 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	// offer device to EtherCAT master module
 	nic->ecdev = ecdev_offer(netdev, e100_ec_poll, THIS_MODULE);
 
-	if (!nic->ecdev) {
+	if (nic->ecdev) {
+		nic->ec_watchdog_jiffies = jiffies;
+	}
+	else {
 		strcpy(netdev->name, "eth%d");
 		if ((err = register_netdev(netdev))) {
 			netif_err(nic, probe, nic->netdev,

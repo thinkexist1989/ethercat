@@ -26,4 +26,5 @@ for f in $KERNELDIR/drivers/net/ethernet/intel/e1000/*.[ch]; do
     git add $o $e
     echo -e "\t$e \\\\\n\t$o \\\\" >> Makefile.am
 done
+
 echo "Remember to update Makefile.am!"

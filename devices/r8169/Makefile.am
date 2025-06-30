@@ -22,45 +22,68 @@
 include $(top_srcdir)/Makefile.kbuild
 
 EXTRA_DIST = \
-    r8169-5.10-ethercat.h \
-    r8169-5.10-orig.h \
-    r8169-5.14-ethercat.h \
-    r8169-5.14-orig.h \
-    r8169-5.15-ethercat.h \
-    r8169-5.15-orig.h \
+	r8169-5.10-ethercat.h \
+	r8169-5.10-orig.h \
+	r8169-5.14-ethercat.h \
+	r8169-5.14-orig.h \
+	r8169-5.15-ethercat.h \
+	r8169-5.15-orig.h \
 	r8169-6.1-ethercat.h \
 	r8169-6.1-orig.h \
-    r8169_firmware-5.10-ethercat.c \
-    r8169_firmware-5.10-ethercat.h \
-    r8169_firmware-5.10-orig.c \
-    r8169_firmware-5.10-orig.h \
-    r8169_firmware-5.14-ethercat.c \
-    r8169_firmware-5.14-ethercat.h \
-    r8169_firmware-5.14-orig.c \
-    r8169_firmware-5.14-orig.h \
-    r8169_firmware-5.15-ethercat.c \
-    r8169_firmware-5.15-ethercat.h \
-    r8169_firmware-5.15-orig.c \
-    r8169_firmware-5.15-orig.h \
+	r8169-6.12-ethercat.h \
+	r8169-6.12-orig.h \
+	r8169-6.4-ethercat.h \
+	r8169-6.4-orig.h \
+	r8169_firmware-5.10-ethercat.c \
+	r8169_firmware-5.10-ethercat.h \
+	r8169_firmware-5.10-orig.c \
+	r8169_firmware-5.10-orig.h \
+	r8169_firmware-5.14-ethercat.c \
+	r8169_firmware-5.14-ethercat.h \
+	r8169_firmware-5.14-orig.c \
+	r8169_firmware-5.14-orig.h \
+	r8169_firmware-5.15-ethercat.c \
+	r8169_firmware-5.15-ethercat.h \
+	r8169_firmware-5.15-orig.c \
+	r8169_firmware-5.15-orig.h \
 	r8169_firmware-6.1-ethercat.c \
 	r8169_firmware-6.1-ethercat.h \
 	r8169_firmware-6.1-orig.c \
 	r8169_firmware-6.1-orig.h \
-    r8169_main-5.10-ethercat.c \
-    r8169_main-5.10-orig.c \
-    r8169_main-5.14-ethercat.c \
-    r8169_main-5.14-orig.c \
-    r8169_main-5.15-ethercat.c \
-    r8169_main-5.15-orig.c \
+	r8169_firmware-6.12-ethercat.c \
+	r8169_firmware-6.12-ethercat.h \
+	r8169_firmware-6.12-orig.c \
+	r8169_firmware-6.12-orig.h \
+	r8169_firmware-6.4-ethercat.c \
+	r8169_firmware-6.4-ethercat.h \
+	r8169_firmware-6.4-orig.c \
+	r8169_firmware-6.4-orig.h \
+	r8169_leds-6.12-ethercat.c \
+	r8169_leds-6.12-orig.c \
+	r8169_main-5.10-ethercat.c \
+	r8169_main-5.10-orig.c \
+	r8169_main-5.14-ethercat.c \
+	r8169_main-5.14-orig.c \
+	r8169_main-5.15-ethercat.c \
+	r8169_main-5.15-orig.c \
 	r8169_main-6.1-ethercat.c \
 	r8169_main-6.1-orig.c \
-    r8169_phy_config-5.10-ethercat.c \
-    r8169_phy_config-5.10-orig.c \
-    r8169_phy_config-5.14-ethercat.c \
-    r8169_phy_config-5.14-orig.c \
-    r8169_phy_config-5.15-ethercat.c \
-    r8169_phy_config-5.15-orig.c \
+	r8169_main-6.12-ethercat.c \
+	r8169_main-6.12-orig.c \
+	r8169_main-6.4-ethercat.c \
+	r8169_main-6.4-orig.c \
+	r8169_phy_config-5.10-ethercat.c \
+	r8169_phy_config-5.10-orig.c \
+	r8169_phy_config-5.14-ethercat.c \
+	r8169_phy_config-5.14-orig.c \
+	r8169_phy_config-5.15-ethercat.c \
+	r8169_phy_config-5.15-orig.c \
 	r8169_phy_config-6.1-ethercat.c \
-	r8169_phy_config-6.1-orig.c
+	r8169_phy_config-6.1-orig.c \
+	r8169_phy_config-6.12-ethercat.c \
+	r8169_phy_config-6.12-orig.c \
+	r8169_phy_config-6.4-ethercat.c \
+	r8169_phy_config-6.4-orig.c \
+	update.sh
 
 #-----------------------------------------------------------------------------

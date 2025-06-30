@@ -4,6 +4,13 @@ vim: spelllang=en spell tw=78
 
 -------------------------------------------------------------------------------
 
+Changes in 1.6.6:
+
+* Added Ethernet drivers for kernels 6.4 and 6.12.
+* Added missing functions to fake user library.
+* Use sint(32) notation in EtherLab output driver
+* Added CONTRIBUTING.md
+
 Changes in 1.6.5:
 
 * Implemented interface changes of Linux 6.15.

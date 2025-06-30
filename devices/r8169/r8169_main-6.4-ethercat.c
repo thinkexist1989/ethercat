@@ -4562,13 +4562,17 @@ static irqreturn_t rtl8169_interrupt(int irq, void *dev_instance)
 
 	if (unlikely(status & RxFIFOOver &&
 	    tp->mac_version == RTL_GIGA_MAC_VER_11)) {
-		netif_stop_queue(tp->dev);
+		if (!get_ecdev(tp)) {
+			netif_stop_queue(tp->dev);
+		}
 		rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
 	}
 
-	if (napi_schedule_prep(&tp->napi)) {
-		rtl_irq_disable(tp);
-		__napi_schedule(&tp->napi);
+	if (!get_ecdev(tp)) {
+		if (napi_schedule_prep(&tp->napi)) {
+			rtl_irq_disable(tp);
+			__napi_schedule(&tp->napi);
+		}
 	}
 out:
 	rtl_ack_events(tp, status);
@@ -4584,8 +4588,8 @@ static void rtl_task(struct work_struct *work)
 
 	rtnl_lock();
 
-	if (!get_ecdev(tp) || !netif_running(tp->dev) ||
-	    !test_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags))
+	if (!get_ecdev(tp) && (!netif_running(tp->dev) ||
+				!test_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags)))
 		goto out_unlock;
 
 	if (test_and_clear_bit(RTL_FLAG_TASK_TX_TIMEOUT, tp->wk.flags)) {
@@ -4594,7 +4598,8 @@ static void rtl_task(struct work_struct *work)
 			ret = pci_reset_bus(tp->pci_dev);
 			if (ret < 0) {
 				netdev_err(tp->dev, "Can't reset secondary PCI bus, detach NIC\n");
-				netif_device_detach(tp->dev);
+				if (!get_ecdev(tp))
+					netif_device_detach(tp->dev);
 				goto out_unlock;
 			}
 		}

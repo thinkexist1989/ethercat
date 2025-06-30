@@ -4277,7 +4277,7 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
 
 	WRITE_ONCE(tp->cur_tx, tp->cur_tx + frags + 1);
 
-	stop_queue = !netif_subqueue_maybe_stop(dev, 0, rtl_tx_slots_avail(tp),
+	stop_queue = !get_ecdev(tp) && !netif_subqueue_maybe_stop(dev, 0, rtl_tx_slots_avail(tp),
 						R8169_TX_STOP_THRS,
 						R8169_TX_START_THRS);
 	if (door_bell || stop_queue)
@@ -4584,7 +4584,7 @@ static void rtl_task(struct work_struct *work)
 
 	rtnl_lock();
 
-	if (!netif_running(tp->dev) ||
+	if (!get_ecdev(tp) || !netif_running(tp->dev) ||
 	    !test_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags))
 		goto out_unlock;
 

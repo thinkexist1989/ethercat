@@ -61,7 +61,7 @@ struct pdo
 struct syncManager
 {
     ec_direction_t dir;
-    std::map<uint16_t /* address */, pdo> pdos;
+    std::map<uint16_t /* index */, pdo> pdos;
 };
 
 class ec_address

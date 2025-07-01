@@ -18,6 +18,19 @@
 
 #include "igb-6.4-ethercat.h"
 
+
+#ifdef CONFIG_SUSE_KERNEL
+#include <linux/suse_version.h>
+#else
+#  ifndef SUSE_VERSION
+#    define SUSE_VERSION 0
+#  endif
+#  ifndef SUSE_PATCHLEVEL
+#    define SUSE_PATCHLEVEL 0
+#  endif
+#endif
+
+
 struct igb_stats {
 	char stat_string[ETH_GSTRING_LEN];
 	int sizeof_stat;
@@ -3278,6 +3291,22 @@ static u32 igb_get_rxfh_indir_size(struct net_device *netdev)
 	return IGB_RETA_SIZE;
 }
 
+#if SUSE_VERSION == 15 && SUSE_PATCHLEVEL >= 6
+static int igb_get_rxfh(struct net_device *netdev,
+			struct ethtool_rxfh_param *rxfh)
+{
+	struct igb_adapter *adapter = netdev_priv(netdev);
+	int i;
+
+	rxfh->hfunc = ETH_RSS_HASH_TOP;
+	if (!rxfh->indir)
+		return 0;
+	for (i = 0; i < IGB_RETA_SIZE; i++)
+		rxfh->indir[i] = adapter->rss_indir_tbl[i];
+
+	return 0;
+}
+#else
 static int igb_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
 			u8 *hfunc)
 {
@@ -3293,6 +3322,7 @@ static int igb_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
 
 	return 0;
 }
+#endif
 
 void igb_write_rss_indir_tbl(struct igb_adapter *adapter)
 {
@@ -3329,6 +3359,50 @@ void igb_write_rss_indir_tbl(struct igb_adapter *adapter)
 	}
 }
 
+#if SUSE_VERSION == 15 && SUSE_PATCHLEVEL >= 6
+static int igb_set_rxfh(struct net_device *netdev,
+			struct ethtool_rxfh_param *rxfh,
+			struct netlink_ext_ack *extack)
+{
+	struct igb_adapter *adapter = netdev_priv(netdev);
+	struct e1000_hw *hw = &adapter->hw;
+	int i;
+	u32 num_queues;
+
+	/* We do not allow change in unsupported parameters */
+	if (rxfh->key ||
+	    (rxfh->hfunc != ETH_RSS_HASH_NO_CHANGE &&
+	     rxfh->hfunc != ETH_RSS_HASH_TOP))
+		return -EOPNOTSUPP;
+	if (!rxfh->indir)
+		return 0;
+
+	num_queues = adapter->rss_queues;
+
+	switch (hw->mac.type) {
+	case e1000_82576:
+		/* 82576 supports 2 RSS queues for SR-IOV */
+		if (adapter->vfs_allocated_count)
+			num_queues = 2;
+		break;
+	default:
+		break;
+	}
+
+	/* Verify user input. */
+	for (i = 0; i < IGB_RETA_SIZE; i++)
+		if (rxfh->indir[i] >= num_queues)
+			return -EINVAL;
+
+
+	for (i = 0; i < IGB_RETA_SIZE; i++)
+		adapter->rss_indir_tbl[i] = rxfh->indir[i];
+
+	igb_write_rss_indir_tbl(adapter);
+
+	return 0;
+}
+#else
 static int igb_set_rxfh(struct net_device *netdev, const u32 *indir,
 			const u8 *key, const u8 hfunc)
 {
@@ -3369,6 +3443,7 @@ static int igb_set_rxfh(struct net_device *netdev, const u32 *indir,
 
 	return 0;
 }
+#endif
 
 static unsigned int igb_max_channels(struct igb_adapter *adapter)
 {

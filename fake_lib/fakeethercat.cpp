@@ -108,9 +108,295 @@ Offset pdo::findEntry(uint16_t idx, uint8_t subindex) const
     return NotFound;
 }
 
+Offset pdo::findEntryByPos(unsigned int entry_pos) const
+{
+    size_t offset_bits = 0;
+    unsigned int pos {0};
+    for (const auto &entry : entries)
+    {
+        if (pos == entry_pos)
+        {
+            return Offset(offset_bits / 8, offset_bits % 8);
+        }
+        offset_bits += entry.bit_length;
+        pos++;
+    }
+    return NotFound;
+}
+
+/*****************************************************************************
+ * Common
+ ****************************************************************************/
+
+unsigned int ecrt_version_magic(void)
+{
+    return ECRT_VERSION_MAGIC;
+}
+
+ec_master_t *ecrt_request_master(
+    unsigned int master_index /**< Index of the master to request. */
+)
+{
+    return new ec_master(master_index);
+}
+
+ec_master_t *ecrt_open_master(
+        unsigned int master_index /**< Index of the master to request. */
+        )
+{
+    return new ec_master(master_index);
+}
+
+void ecrt_release_master(ec_master_t *master)
+{
+    delete master;
+}
+
 /*****************************************************************************
  * Master
  ****************************************************************************/
+
+int ecrt_master_reserve(
+        ec_master_t *master /**< EtherCAT master */
+        )
+{
+    return 0;
+}
+
+static const char *getPrefix()
+{
+    if (const auto ans = getenv("FAKE_EC_PREFIX"))
+        return ans;
+    return "/FakeEtherCAT";
+}
+
+ec_domain *ec_master::createDomain()
+{
+    domains.emplace_back(rt_ipc.get(), getPrefix(), this);
+    return &domains.back();
+}
+
+ec_domain_t *ecrt_master_create_domain(
+    ec_master_t *master /**< EtherCAT master. */
+)
+{
+    return master->createDomain();
+}
+
+ec_slave_config_t *ec_master::slave_config(
+    uint16_t alias,       /**< Slave alias. */
+    uint16_t position,    /**< Slave position. */
+    uint32_t vendor_id,   /**< Expected vendor ID. */
+    uint32_t product_code /**< Expected product code. */
+)
+{
+    const ec_address address{alias, position};
+    const auto it = slaves.find(address);
+    if (it != slaves.end())
+    {
+        if (it->second.vendor_id == vendor_id
+                && it->second.product_code == product_code)
+            return &it->second;
+        else
+        {
+            std::cerr << "Attempted to reconfigure slave (" << alias
+                << "," << position << ")!\n";
+            return nullptr;
+        }
+    }
+    else
+    {
+        return &slaves.insert(std::make_pair<ec_address,
+                ec_slave_config>(ec_address{address},
+                    ec_slave_config{address, vendor_id,
+                    product_code})).first->second;
+    }
+}
+
+ec_slave_config_t *ecrt_master_slave_config(
+    ec_master_t *master,  /**< EtherCAT master */
+    uint16_t alias,       /**< Slave alias. */
+    uint16_t position,    /**< Slave position. */
+    uint32_t vendor_id,   /**< Expected vendor ID. */
+    uint32_t product_code /**< Expected product code. */
+)
+{
+    return master->slave_config(alias, position, vendor_id, product_code);
+}
+
+int ecrt_master_select_reference_clock(
+        ec_master_t *master, /**< EtherCAT master. */
+        ec_slave_config_t *sc /**< Slave config of the slave to use as the
+                               * reference slave (or NULL). */
+        )
+{
+    return 0;
+}
+
+int ecrt_master(
+        ec_master_t *master, /**< EtherCAT master */
+        ec_master_info_t *master_info /**< Structure that will output the
+                                        information */
+        )
+{
+    master_info->slave_count = 0;
+    master_info->link_up = 1;
+    master_info->scan_busy = 0;
+    master_info->app_time = 0;
+    return 0;
+}
+
+int ecrt_master_scan_progress(
+    ec_master_t *master,                /**< EtherCAT master */
+    ec_master_scan_progress_t *progress /**< Structure that will output
+                                          the progress information. */
+)
+{
+    progress->scan_index = progress->slave_count = master->getNoSlaves();
+    return 0;
+}
+
+int ecrt_master_get_slave(
+        ec_master_t *master, /**< EtherCAT master */
+        uint16_t slave_position, /**< Slave position. */
+        ec_slave_info_t *slave_info /**< Structure that will output the
+                                      information */
+        )
+{
+    slave_info->position = slave_position;
+    slave_info->vendor_id = 0x00000000;
+    slave_info->product_code = 0x00000000;
+    slave_info->revision_number = 0x00000000;
+    slave_info->serial_number = 0x00000000;
+    slave_info->alias = 0x0000;
+    slave_info->current_on_ebus = 0;
+    for (unsigned int i = 0; i < EC_MAX_PORTS; i++) {
+        slave_info->ports[i].desc = EC_PORT_NOT_IMPLEMENTED;
+        slave_info->ports[i].link.link_up = 0;
+        slave_info->ports[i].link.loop_closed = 1;
+        slave_info->ports[i].link.signal_detected = 0;
+        slave_info->ports[i].next_slave = 0;
+        slave_info->ports[i].delay_to_next_dc = 0;
+    }
+    slave_info->al_state = EC_AL_STATE_OP;
+    slave_info->error_flag = 0;
+    slave_info->sync_count = 8;
+    slave_info->sdo_count = 0;
+    slave_info->name[0] = 0;
+    return 0;
+}
+
+int ecrt_master_get_sync_manager(
+        ec_master_t *master, /**< EtherCAT master. */
+        uint16_t slave_position, /**< Slave position. */
+        uint8_t sync_index, /**< Sync manager index. Must be less
+                                than #EC_MAX_SYNC_MANAGERS. */
+        ec_sync_info_t *sync /**< Pointer to output structure. */
+        )
+{
+    sync->index = sync_index;
+    sync->dir = EC_DIR_INVALID;
+    sync->n_pdos = 0;
+    sync->pdos = nullptr;
+    sync->watchdog_mode = EC_WD_DEFAULT;
+    return 0;
+}
+
+int ecrt_master_get_pdo(
+        ec_master_t *master, /**< EtherCAT master. */
+        uint16_t slave_position, /**< Slave position. */
+        uint8_t sync_index, /**< Sync manager index. Must be less
+                                 than #EC_MAX_SYNC_MANAGERS. */
+        uint16_t pos, /**< Zero-based PDO position. */
+        ec_pdo_info_t *pdo /**< Pointer to output structure. */
+        )
+{
+    return -ENOENT;
+}
+
+int ecrt_master_get_pdo_entry(
+        ec_master_t *master, /**< EtherCAT master. */
+        uint16_t slave_position, /**< Slave position. */
+        uint8_t sync_index, /**< Sync manager index. Must be less
+                                 than #EC_MAX_SYNC_MANAGERS. */
+        uint16_t pdo_pos, /**< Zero-based PDO position. */
+        uint16_t entry_pos, /**< Zero-based PDO entry position. */
+        ec_pdo_entry_info_t *entry /**< Pointer to output structure. */
+        )
+{
+    return -ENOENT;
+}
+
+int ecrt_master_sdo_download(
+        ec_master_t *master, /**< EtherCAT master. */
+        uint16_t slave_position, /**< Slave position. */
+        uint16_t index, /**< Index of the SDO. */
+        uint8_t subindex, /**< Subindex of the SDO. */
+        const uint8_t *data, /**< Data buffer to download. */
+        size_t data_size, /**< Size of the data buffer. */
+        uint32_t *abort_code /**< Abort code of the SDO download. */
+        )
+{
+    return 0;
+}
+
+int ecrt_master_sdo_download_complete(
+        ec_master_t *master, /**< EtherCAT master. */
+        uint16_t slave_position, /**< Slave position. */
+        uint16_t index, /**< Index of the SDO. */
+        const uint8_t *data, /**< Data buffer to download. */
+        size_t data_size, /**< Size of the data buffer. */
+        uint32_t *abort_code /**< Abort code of the SDO download. */
+        )
+{
+    return 0;
+}
+
+int ecrt_master_sdo_upload(
+        ec_master_t *master, /**< EtherCAT master. */
+        uint16_t slave_position, /**< Slave position. */
+        uint16_t index, /**< Index of the SDO. */
+        uint8_t subindex, /**< Subindex of the SDO. */
+        uint8_t *target, /**< Target buffer for the upload. */
+        size_t target_size, /**< Size of the target buffer. */
+        size_t *result_size, /**< Uploaded data size. */
+        uint32_t *abort_code /**< Abort code of the SDO upload. */
+        )
+{
+    *result_size = 0;
+    return 0;
+}
+
+int ecrt_master_write_idn(
+        ec_master_t *master, /**< EtherCAT master. */
+        uint16_t slave_position, /**< Slave position. */
+        uint8_t drive_no, /**< Drive number. */
+        uint16_t idn, /**< SoE IDN (see ecrt_slave_config_idn()). */
+        const uint8_t *data, /**< Pointer to data to write. */
+        size_t data_size, /**< Size of data to write. */
+        uint16_t *error_code /**< Pointer to variable, where an SoE error code
+                               can be stored. */
+        )
+{
+    return 0;
+}
+
+int ecrt_master_read_idn(
+        ec_master_t *master, /**< EtherCAT master. */
+        uint16_t slave_position, /**< Slave position. */
+        uint8_t drive_no, /**< Drive number. */
+        uint16_t idn, /**< SoE IDN (see ecrt_slave_config_idn()). */
+        uint8_t *target, /**< Pointer to memory where the read data can be
+                           stored. */
+        size_t target_size, /**< Size of the memory \a target points to. */
+        size_t *result_size, /**< Actual size of the received data. */
+        uint16_t *error_code /**< Pointer to variable, where an SoE error code
+                               can be stored. */
+        )
+{
+    *result_size = 0;
+    return 0;
+}
 
 int ec_master::activate()
 {
@@ -151,32 +437,54 @@ int ecrt_master_activate(
     }
 }
 
-int ecrt_master_application_time(
-    ec_master_t *master, /**< EtherCAT master. */
-    uint64_t app_time    /**< Application time. */
+int ec_master::deactivate()
+{
+    rt_ipc.reset(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str()));
+
+    domains.clear();
+    slaves.clear();
+
+    return 0;
+}
+
+int ecrt_master_deactivate(
+        ec_master_t *master /**< EtherCAT master. */
+        )
+{
+    return master->deactivate();
+}
+
+int ecrt_master_set_send_interval(
+        ec_master_t *master, /**< EtherCAT master. */
+        size_t send_interval /**< Send interval in us */
+        )
+{
+    return 0;
+}
+
+int ecrt_master_send(
+    ec_master_t *master /**< EtherCAT master. */
 )
 {
     return 0;
 }
 
-ec_domain_t *ecrt_master_create_domain(
+int ecrt_master_receive(
     ec_master_t *master /**< EtherCAT master. */
 )
 {
-    return master->createDomain();
+    return 0;
 }
 
-static const char *getPrefix()
+int ecrt_master_state(
+    const ec_master_t *master, /**< EtherCAT master. */
+    ec_master_state_t *state   /**< Structure to store the information. */
+)
 {
-    if (const auto ans = getenv("FAKE_EC_PREFIX"))
-        return ans;
-    return "/FakeEtherCAT";
-}
-
-ec_domain *ec_master::createDomain()
-{
-    domains.emplace_back(rt_ipc.get(), getPrefix(), this);
-    return &domains.back();
+    state->slaves_responding = master->getNoSlaves();
+    state->link_up = 1;
+    state->al_states = 8;
+    return 0;
 }
 
 int ecrt_master_link_state(
@@ -193,101 +501,12 @@ int ecrt_master_link_state(
     return 0;
 }
 
-int ecrt_master_receive(
-    ec_master_t *master /**< EtherCAT master. */
+int ecrt_master_application_time(
+    ec_master_t *master, /**< EtherCAT master. */
+    uint64_t app_time    /**< Application time. */
 )
 {
     return 0;
-}
-
-int ecrt_master_reset(
-    ec_master_t *master /**< EtherCAT master. */
-)
-{
-    return 0;
-}
-
-int ecrt_master_scan_progress(
-    ec_master_t *master,                /**< EtherCAT master */
-    ec_master_scan_progress_t *progress /**< Structure that will output
-                                          the progress information. */
-)
-{
-    progress->scan_index = progress->slave_count = master->getNoSlaves();
-    return 0;
-}
-
-int ecrt_master_send(
-    ec_master_t *master /**< EtherCAT master. */
-)
-{
-    return 0;
-}
-
-ec_slave_config_t *ecrt_master_slave_config(
-    ec_master_t *master,  /**< EtherCAT master */
-    uint16_t alias,       /**< Slave alias. */
-    uint16_t position,    /**< Slave position. */
-    uint32_t vendor_id,   /**< Expected vendor ID. */
-    uint32_t product_code /**< Expected product code. */
-)
-{
-    return master->slave_config(alias, position, vendor_id, product_code);
-}
-
-ec_slave_config_t *ec_master::slave_config(
-    uint16_t alias,       /**< Slave alias. */
-    uint16_t position,    /**< Slave position. */
-    uint32_t vendor_id,   /**< Expected vendor ID. */
-    uint32_t product_code /**< Expected product code. */
-)
-{
-    const ec_address address{alias, position};
-    const auto it = slaves.find(address);
-    if (it != slaves.end())
-    {
-        if (it->second.vendor_id == vendor_id
-                && it->second.product_code == product_code)
-            return &it->second;
-        else
-        {
-            std::cerr << "Attempted to reconfigure slave (" << alias
-                << "," << position << ")!\n";
-            return nullptr;
-        }
-    }
-    else
-    {
-        return &slaves.insert(std::make_pair<ec_address,
-                ec_slave_config>(ec_address{address},
-                    ec_slave_config{address, vendor_id,
-                    product_code})).first->second;
-    }
-}
-
-int ecrt_master_state(
-    const ec_master_t *master, /**< EtherCAT master. */
-    ec_master_state_t *state   /**< Structure to store the information. */
-)
-{
-    state->slaves_responding = master->getNoSlaves();
-    state->link_up = 1;
-    state->al_states = 8;
-    return 0;
-}
-
-int ecrt_master_sync_monitor_queue(
-    ec_master_t *master /**< EtherCAT master. */
-)
-{
-    return 0;
-}
-
-uint32_t ecrt_master_sync_monitor_process(
-    const ec_master_t *master /**< EtherCAT master. */
-)
-{
-    return 32;
 }
 
 int ecrt_master_sync_reference_clock(
@@ -312,34 +531,34 @@ int ecrt_master_sync_slave_clocks(
     return 0;
 }
 
-void ecrt_release_master(ec_master_t *master)
+int ecrt_master_reference_clock_time(
+        const ec_master_t *master, /**< EtherCAT master. */
+        uint32_t *time /**< Pointer to store the queried system time. */
+        )
 {
-    delete master;
+    *time = 0;
+    return 0;
 }
 
-ec_master_t *ecrt_request_master(
-    unsigned int master_index /**< Index of the master to request. */
+int ecrt_master_sync_monitor_queue(
+    ec_master_t *master /**< EtherCAT master. */
 )
 {
-    return new ec_master(master_index);
+    return 0;
 }
 
-static const char *getName()
+uint32_t ecrt_master_sync_monitor_process(
+    const ec_master_t *master /**< EtherCAT master. */
+)
 {
-    static const char *default_name = "FakeEtherCAT";
+    return 32;
+}
 
-    if (const auto ans = getenv("FAKE_EC_NAME"))
-    {
-        return ans;
-    }
-
-    std::cerr
-        << "\nThe environment variable \"FAKE_EC_NAME\" is not set.\n"
-        << "Using the default value \"" << default_name << "\".\n"
-        << "Please consider to set unique names when using multiple"
-        << " instances.\n\n";
-        
-    return default_name;
+int ecrt_master_reset(
+    ec_master_t *master /**< EtherCAT master. */
+)
+{
+    return 0;
 }
 
 static int mkpath(const std::string &file_path)
@@ -375,98 +594,35 @@ static std::string getRtIpcDir(int idx)
     return ans;
 }
 
+static const char *getName()
+{
+    static const char *default_name = "FakeEtherCAT";
+
+    if (const auto ans = getenv("FAKE_EC_NAME"))
+    {
+        return ans;
+    }
+
+    std::cerr
+        << "\nThe environment variable \"FAKE_EC_NAME\" is not set.\n"
+        << "Using the default value \"" << default_name << "\".\n"
+        << "Please consider to set unique names when using multiple"
+        << " instances.\n\n";
+
+    return default_name;
+}
+
 ec_master::ec_master(int id):
-    rt_ipc_dir(getRtIpcDir(id)), rt_ipc_name(getName()),
-    rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())), id_(id)
+    rt_ipc_dir(getRtIpcDir(id)),
+    rt_ipc_name(getName()),
+    rt_ipc(rtipc_create(rt_ipc_name.c_str(), rt_ipc_dir.c_str())),
+    id_(id)
 {
 }
 
 /*****************************************************************************
  * Slave Configuration
  ****************************************************************************/
-
-int ecrt_slave_config_complete_sdo(
-    ec_slave_config_t *sc, /**< Slave configuration. */
-    uint16_t index,        /**< Index of the SDO to configure. */
-    const uint8_t *data,   /**< Pointer to the data. */
-    size_t size            /**< Size of the \a data. */
-)
-{
-    return ecrt_slave_config_sdo(sc, index, 0, data, size);
-}
-
-ec_sdo_request_t *ecrt_slave_config_create_sdo_request(
-    ec_slave_config_t *sc, /**< Slave configuration. */
-    uint16_t index,        /**< SDO index. */
-    uint8_t subindex,      /**< SDO subindex. */
-    size_t size            /**< Data size to reserve. */
-)
-{
-    return nullptr;
-}
-
-int ecrt_slave_config_dc(
-    ec_slave_config_t *sc,    /**< Slave configuration. */
-    uint16_t assign_activate, /**< AssignActivate word. */
-    uint32_t sync0_cycle,     /**< SYNC0 cycle time [ns]. */
-    int32_t sync0_shift,      /**< SYNC0 shift time [ns]. */
-    uint32_t sync1_cycle,     /**< SYNC1 cycle time [ns]. */
-    int32_t sync1_shift       /**< SYNC1 shift time [ns]. */
-)
-{
-    return 0;
-}
-
-int ecrt_slave_config_idn(
-    ec_slave_config_t *sc, /**< Slave configuration. */
-    uint8_t drive_no,      /**< Drive number. */
-    uint16_t idn,          /**< SoE IDN. */
-    ec_al_state_t state,   /**< AL state in which to write the IDN (PREOP or
-                             SAFEOP). */
-    const uint8_t *data,   /**< Pointer to the data. */
-    size_t size            /**< Size of the \a data. */
-)
-{
-    return 0;
-}
-
-int ecrt_slave_config_pdos(
-    ec_slave_config_t *sc,       /**< Slave configuration. */
-    unsigned int n_syncs,        /**< Number of sync manager configurations in
-                                   \a syncs. */
-    const ec_sync_info_t syncs[] /**< Array of sync manager
-                                   configurations. */
-)
-{
-    if (!syncs)
-        return 0;
-    for (unsigned int sync_idx = 0; sync_idx < n_syncs; ++sync_idx)
-    {
-        if (syncs[sync_idx].index == 0xff)
-        {
-            return 0;
-        }
-        auto &syncManager = sc->sync_managers[syncs[sync_idx].index];
-        syncManager.dir = syncs[sync_idx].dir;
-        for (unsigned int i = 0; i < syncs[sync_idx].n_pdos; ++i)
-        {
-            const auto &in_pdo = syncs[sync_idx].pdos[i];
-            if (in_pdo.n_entries == 0 || !in_pdo.entries)
-            {
-                std::cerr << "Default mapping not supported.";
-                return -1;
-            }
-            auto &out_pdo = syncManager.pdos[in_pdo.index];
-            for (unsigned int pdo_entry_idx = 0;
-                    pdo_entry_idx < in_pdo.n_entries; ++pdo_entry_idx)
-            {
-                out_pdo.entries.push_back(in_pdo.entries[pdo_entry_idx]);
-            }
-        }
-    }
-
-    return 0;
-}
 
 int ecrt_slave_config_sync_manager(
         ec_slave_config_t *sc, /**< Slave configuration. */
@@ -532,8 +688,8 @@ int ecrt_slave_config_pdo_mapping_add(
             smIt != sc->sync_managers.end();
             ++smIt) {
 
-        auto pdoIt = smIt->second.pdos.find(pdo_index);
-        if (pdoIt == smIt->second.pdos.end()) {
+        auto pdo_it = smIt->second.pdos.find(pdo_index);
+        if (pdo_it == smIt->second.pdos.end()) {
             continue;
         }
 
@@ -541,7 +697,7 @@ int ecrt_slave_config_pdo_mapping_add(
         entry_info.index = entry_index;
         entry_info.subindex = entry_subindex;
         entry_info.bit_length = entry_bit_length;
-        pdoIt->second.entries.push_back(entry_info);
+        pdo_it->second.entries.push_back(entry_info);
         return 0;
     }
 
@@ -558,18 +714,56 @@ int ecrt_slave_config_pdo_mapping_clear(
     for (auto smIt = sc->sync_managers.begin();
             smIt != sc->sync_managers.end();
             ++smIt) {
-        auto pdoIt = smIt->second.pdos.find(pdo_index);
-        if (pdoIt == smIt->second.pdos.end()) {
+        auto pdo_it = smIt->second.pdos.find(pdo_index);
+        if (pdo_it == smIt->second.pdos.end()) {
             continue;
         }
 
-        pdoIt->second.entries.clear();
+        pdo_it->second.entries.clear();
         return 0;
     }
 
     std::cerr << __func__ << "(): PDO " << std::hex << pdo_index
         << " not found." << std::endl;
     return -1;
+}
+
+int ecrt_slave_config_pdos(
+    ec_slave_config_t *sc,       /**< Slave configuration. */
+    unsigned int n_syncs,        /**< Number of sync manager configurations in
+                                   \a syncs. */
+    const ec_sync_info_t syncs[] /**< Array of sync manager
+                                   configurations. */
+)
+{
+    if (!syncs)
+        return 0;
+    for (unsigned int sync_idx = 0; sync_idx < n_syncs; ++sync_idx)
+    {
+        if (syncs[sync_idx].index == 0xff)
+        {
+            return 0;
+        }
+        auto &syncManager = sc->sync_managers[syncs[sync_idx].index];
+        syncManager.dir = syncs[sync_idx].dir;
+        for (unsigned int i = 0; i < syncs[sync_idx].n_pdos; ++i)
+        {
+            const auto &in_pdo = syncs[sync_idx].pdos[i];
+            if (in_pdo.n_entries == 0 || !in_pdo.entries)
+            {
+                std::cerr << "Default mapping not supported.";
+                return -1;
+            }
+            auto &out_pdo = syncManager.pdos[in_pdo.index];
+            for (unsigned int pdo_entry_idx = 0;
+                    pdo_entry_idx < in_pdo.n_entries; ++pdo_entry_idx)
+            {
+                out_pdo.entries.push_back(in_pdo.entries[pdo_entry_idx]);
+            }
+        }
+    }
+
+    return 0;
 }
 
 int ecrt_slave_config_reg_pdo_entry(
@@ -613,6 +807,74 @@ int ecrt_slave_config_reg_pdo_entry(
     return -1; // offset
 }
 
+int ecrt_slave_config_reg_pdo_entry_pos(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint8_t sync_index, /**< Sync manager index. */
+        unsigned int pdo_pos, /**< Position of the PDO inside the SM. */
+        unsigned int entry_pos, /**< Position of the entry inside the PDO. */
+        ec_domain_t *domain, /**< Domain. */
+        unsigned int *bit_position /**< Optional address if bit addressing
+                                 is desired */
+        )
+{
+    auto syncIt {sc->sync_managers.find(sync_index)};
+    if (syncIt == sc->sync_managers.end()) {
+        return -1;
+    }
+
+    auto pdo_it {syncIt->second.pdos.find(pdo_pos)};
+    if (pdo_it == syncIt->second.pdos.end()) {
+        return -1;
+    }
+
+    const auto offset = pdo_it->second.findEntryByPos(entry_pos);
+    if (offset != NotFound)
+    {
+        return -1;
+    }
+
+    const auto domain_offset = domain->map(*sc, sync_index, pdo_it->first);
+    if (domain_offset == -1) {
+        return -1;
+    }
+
+    if (bit_position) {
+        *bit_position = offset.bits;
+    }
+    else if (offset.bits)
+    {
+        std::cerr << "Pdo Entry is not byte aligned"
+            << " but bit offset is ignored!\n";
+        return -1;
+    }
+    return domain_offset + offset.bytes;
+}
+
+int ecrt_slave_config_dc(
+    ec_slave_config_t *sc,    /**< Slave configuration. */
+    uint16_t assign_activate, /**< AssignActivate word. */
+    uint32_t sync0_cycle,     /**< SYNC0 cycle time [ns]. */
+    int32_t sync0_shift,      /**< SYNC0 shift time [ns]. */
+    uint32_t sync1_cycle,     /**< SYNC1 cycle time [ns]. */
+    int32_t sync1_shift       /**< SYNC1 shift time [ns]. */
+)
+{
+    return 0;
+}
+
+int ecrt_slave_config_sdo(
+    ec_slave_config_t *sc, /**< Slave configuration. */
+    uint16_t index,        /**< Index of the SDO to configure. */
+    uint8_t subindex,      /**< Subindex of the SDO to configure. */
+    const uint8_t *data,   /**< Pointer to the data. */
+    size_t size            /**< Size of the \a data. */
+)
+{
+    sc->sdos[sdo_address{index, subindex}] =
+        std::basic_string<uint8_t>(data, data + size);
+    return 0;
+}
+
 int ecrt_slave_config_sdo8(
     ec_slave_config_t *sc, /**< Slave configuration */
     uint16_t sdo_index,    /**< Index of the SDO to configure. */
@@ -649,16 +911,171 @@ int ecrt_slave_config_sdo32(
             buf, sizeof(buf));
 }
 
-int ecrt_slave_config_sdo(
+int ecrt_slave_config_complete_sdo(
     ec_slave_config_t *sc, /**< Slave configuration. */
     uint16_t index,        /**< Index of the SDO to configure. */
-    uint8_t subindex,      /**< Subindex of the SDO to configure. */
     const uint8_t *data,   /**< Pointer to the data. */
     size_t size            /**< Size of the \a data. */
 )
 {
-    sc->sdos[sdo_address{index, subindex}] =
-        std::basic_string<uint8_t>(data, data + size);
+    return ecrt_slave_config_sdo(sc, index, 0, data, size);
+}
+
+int ecrt_slave_config_emerg_size(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        size_t elements /**< Number of records of the CoE emergency ring. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_emerg_pop(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint8_t *target /**< Pointer to target memory (at least
+                          EC_COE_EMERGENCY_MSG_SIZE bytes). */
+        )
+{
+    return -ENOENT;
+}
+
+int ecrt_slave_config_emerg_clear(
+        ec_slave_config_t *sc /**< Slave configuration. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_emerg_overruns(
+        const ec_slave_config_t *sc /**< Slave configuration. */
+        )
+{
+    return 0;
+}
+
+ec_sdo_request_t *ecrt_slave_config_create_sdo_request(
+    ec_slave_config_t *sc, /**< Slave configuration. */
+    uint16_t index,        /**< SDO index. */
+    uint8_t subindex,      /**< SDO subindex. */
+    size_t size            /**< Data size to reserve. */
+)
+{
+    return nullptr;
+}
+
+ec_soe_request_t *ecrt_slave_config_create_soe_request(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        uint8_t drive_no, /**< Drive number. */
+        uint16_t idn, /**< Sercos ID-Number. */
+        size_t size /**< Data size to reserve. */
+        )
+{
+    return nullptr;
+}
+
+ec_voe_handler_t *ecrt_slave_config_create_voe_handler(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        size_t size /**< Data size to reserve. */
+        )
+{
+    return nullptr;
+}
+
+ec_reg_request_t *ecrt_slave_config_create_reg_request(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        size_t size /**< Data size to reserve. */
+        )
+{
+    return nullptr;
+}
+
+int ecrt_slave_config_state(
+        const ec_slave_config_t *sc, /**< Slave configuration */
+        ec_slave_config_state_t *state /**< State object to write to. */
+        )
+{
+    state->online = 1;
+    state->operational = 1;
+    state->al_state = EC_AL_STATE_OP;
+    return 0;
+}
+
+int ecrt_slave_config_idn(
+    ec_slave_config_t *sc, /**< Slave configuration. */
+    uint8_t drive_no,      /**< Drive number. */
+    uint16_t idn,          /**< SoE IDN. */
+    ec_al_state_t state,   /**< AL state in which to write the IDN (PREOP or
+                             SAFEOP). */
+    const uint8_t *data,   /**< Pointer to the data. */
+    size_t size            /**< Size of the \a data. */
+)
+{
+    return 0;
+}
+
+int ecrt_slave_config_flag(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        const char *key, /**< Key as null-terminated ASCII string. */
+        int32_t value /**< Value to store. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_eoe_mac_address(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        const unsigned char *mac_address /**< MAC address. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_eoe_ip_address(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        struct in_addr ip_address /**< IPv4 address. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_eoe_subnet_mask(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        struct in_addr subnet_mask /**< IPv4 subnet mask. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_eoe_default_gateway(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        struct in_addr gateway_address /**< Gateway's IPv4 address. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_eoe_dns_address(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        struct in_addr dns_address /**< IPv4 address of the DNS server. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_eoe_hostname(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        const char *name /**< Zero-terminated host name. */
+        )
+{
+    return 0;
+}
+
+int ecrt_slave_config_state_timeout(
+        ec_slave_config_t *sc, /**< Slave configuration. */
+        ec_al_state_t from_state, /**< Initial state. */
+        ec_al_state_t to_state, /**< Target state. */
+        unsigned int timeout_ms /**< Timeout in [ms]. */
+        )
+{
     return 0;
 }
 
@@ -692,6 +1109,13 @@ int ecrt_domain_reg_pdo_entry_list(
     }
 
     return 0;
+}
+
+size_t ecrt_domain_size(
+        const ec_domain_t *domain /**< Domain. */
+        )
+{
+    return domain->getSize();
 }
 
 uint8_t *ecrt_domain_data(
@@ -814,7 +1238,224 @@ ssize_t ec_domain::map(ec_slave_config const &config,
 }
 
 /*****************************************************************************
- * Helpers
+ * SDO requests
+ ****************************************************************************/
+
+int ecrt_sdo_request_index(
+        ec_sdo_request_t *req, /**< SDO request. */
+        uint16_t index, /**< SDO index. */
+        uint8_t subindex /**< SDO subindex. */
+        )
+{
+    return 0;
+}
+
+int ecrt_sdo_request_timeout(
+        ec_sdo_request_t *req, /**< SDO request. */
+        uint32_t timeout /**< Timeout in milliseconds. Zero means no
+                           timeout. */
+        )
+{
+    return 0;
+}
+
+uint8_t *ecrt_sdo_request_data(
+        const ec_sdo_request_t *req /**< SDO request. */
+        )
+{
+    return nullptr;
+}
+
+size_t ecrt_sdo_request_data_size(
+        const ec_sdo_request_t *req /**< SDO request. */
+        )
+{
+    return 0;
+}
+
+ec_request_state_t ecrt_sdo_request_state(
+        ec_sdo_request_t *req /**< SDO request. */
+        )
+{
+    return EC_REQUEST_ERROR;
+}
+
+int ecrt_sdo_request_write(
+        ec_sdo_request_t *req /**< SDO request. */
+        )
+{
+    return 0;
+}
+
+int ecrt_sdo_request_read(
+        ec_sdo_request_t *req /**< SDO request. */
+        )
+{
+    return 0;
+}
+
+/*****************************************************************************
+ * SoE request
+ ****************************************************************************/
+
+int ecrt_soe_request_idn(
+        ec_soe_request_t *req, /**< IDN request. */
+        uint8_t drive_no, /**< SDO index. */
+        uint16_t idn /**< SoE IDN. */
+        )
+{
+    return 0;
+}
+
+int ecrt_soe_request_timeout(
+        ec_soe_request_t *req, /**< SoE request. */
+        uint32_t timeout /**< Timeout in milliseconds. Zero means no
+                           timeout. */
+        )
+{
+    return 0;
+}
+
+uint8_t *ecrt_soe_request_data(
+        const ec_soe_request_t *req /**< SoE request. */
+        )
+{
+    return nullptr;
+}
+
+size_t ecrt_soe_request_data_size(
+        const ec_soe_request_t *req /**< SoE request. */
+        )
+{
+    return 0;
+}
+
+ec_request_state_t ecrt_soe_request_state(
+        ec_soe_request_t *req /**< SoE request. */
+        )
+{
+    return EC_REQUEST_ERROR;
+}
+
+int ecrt_soe_request_write(
+        ec_soe_request_t *req /**< SoE request. */
+        )
+{
+    return 0;
+}
+
+int ecrt_soe_request_read(
+        ec_soe_request_t *req /**< SoE request. */
+        )
+{
+    return 0;
+}
+
+/*****************************************************************************
+ * VoE handler
+ ****************************************************************************/
+
+int ecrt_voe_handler_send_header(
+        ec_voe_handler_t *voe, /**< VoE handler. */
+        uint32_t vendor_id, /**< Vendor ID. */
+        uint16_t vendor_type /**< Vendor-specific type. */
+        )
+{
+    return 0;
+}
+
+int ecrt_voe_handler_received_header(
+        const ec_voe_handler_t *voe, /**< VoE handler. */
+        uint32_t *vendor_id, /**< Vendor ID. */
+        uint16_t *vendor_type /**< Vendor-specific type. */
+        )
+{
+    *vendor_id = 0;
+    *vendor_type = 0;
+    return 0;
+}
+
+uint8_t *ecrt_voe_handler_data(
+        const ec_voe_handler_t *voe /**< VoE handler. */
+        )
+{
+    return nullptr;
+}
+
+size_t ecrt_voe_handler_data_size(
+        const ec_voe_handler_t *voe /**< VoE handler. */
+        )
+{
+    return 0;
+}
+
+int ecrt_voe_handler_write(
+        ec_voe_handler_t *voe, /**< VoE handler. */
+        size_t size /**< Number of bytes to write (without the VoE header). */
+        )
+{
+    return 0;
+}
+
+int ecrt_voe_handler_read(
+        ec_voe_handler_t *voe /**< VoE handler. */
+        )
+{
+    return 0;
+}
+
+int ecrt_voe_handler_read_nosync(
+        ec_voe_handler_t *voe /**< VoE handler. */
+        )
+{
+    return 0;
+}
+
+ec_request_state_t ecrt_voe_handler_execute(
+        ec_voe_handler_t *voe /**< VoE handler. */
+        )
+{
+    return EC_REQUEST_ERROR;
+}
+
+/*****************************************************************************
+ * Register request
+ ****************************************************************************/
+
+uint8_t *ecrt_reg_request_data(
+        const ec_reg_request_t *req /**< Register request. */
+        )
+{
+    return nullptr;
+}
+
+ec_request_state_t ecrt_reg_request_state(
+        const ec_reg_request_t *req /**< Register request. */
+    )
+{
+    return EC_REQUEST_ERROR;
+}
+
+int ecrt_reg_request_write(
+        ec_reg_request_t *req, /**< Register request. */
+        uint16_t address, /**< Register address. */
+        size_t size /**< Size to write. */
+        )
+{
+    return 0;
+}
+
+int ecrt_reg_request_read(
+        ec_reg_request_t *req, /**< Register request. */
+        uint16_t address, /**< Register address. */
+        size_t size /**< Size to write. */
+        )
+{
+    return 0;
+}
+
+/*****************************************************************************
+ * Floating-point read functions
  ****************************************************************************/
 
 void ecrt_write_lreal(void *data, double const value)

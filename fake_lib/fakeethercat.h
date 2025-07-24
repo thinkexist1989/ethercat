@@ -56,6 +56,7 @@ struct pdo
     size_t sizeInBytes() const;
 
     Offset findEntry(uint16_t idx, uint8_t subindex) const;
+    Offset findEntryByPos(unsigned int) const;
 };
 
 struct syncManager
@@ -180,6 +181,11 @@ public:
         return const_cast<uint8_t *>(data.data());
     }
 
+    size_t getSize() const
+    {
+        return data.size();
+    }
+
     int activate();
     int process();
     int queue();
@@ -214,15 +220,17 @@ public:
     explicit ec_master(int id);
 
     int activate();
+    int deactivate();
+
     ec_domain *createDomain();
 
     int getNoSlaves() const { return slaves.size(); }
     int getId() const { return id_; }
 
-ec_slave_config_t *slave_config(
-    uint16_t alias,       /**< Slave alias. */
-    uint16_t position,    /**< Slave position. */
-    uint32_t vendor_id,   /**< Expected vendor ID. */
-    uint32_t product_code /**< Expected product code. */
-);
+    ec_slave_config_t *slave_config(
+            uint16_t alias,       /**< Slave alias. */
+            uint16_t position,    /**< Slave position. */
+            uint32_t vendor_id,   /**< Expected vendor ID. */
+            uint32_t product_code /**< Expected product code. */
+            );
 };

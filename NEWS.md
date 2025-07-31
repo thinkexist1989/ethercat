@@ -32,7 +32,7 @@
 
 - Fix ccat for aarch64 >= 6.11.0
 - Removed domain information from libfakeethercat RtIPC paths
-- Remove unnecessary inline statement causing build -O0 problems
+- Remove unnecessary inline statement causing build `-O0` problems
 - Fixed some compiler warnings
 - Added static keywords to internal functions
 
@@ -86,7 +86,7 @@
     - Avoided semaphore locking from userspace/rtdm library: Implemented
       datagram ring instead of queue.
     - Assign SII to PDI during PREOP transition; Introduced
-      --enable-sii-assign to switch this on.
+      `--enable-sii-assign` to switch this on.
     - Avoided re-allocating memory in userspace library implementations of
       `ecrt_sdo_request_state()` and in VoE handlers.
     - Send sync datagrams only if reference clock is found.
@@ -103,7 +103,7 @@
     - Reset master state machine when going to orphaned phase.
 - Command-line tool:
     - Show complete access flag in config view.
-    - Added EtherLab skin for 'ethercat pdos' command.
+    - Added EtherLab skin for `ethercat pdos` command.
     - Fixed 'String too large' bug.
 - Infrastructure:
     - Added `AM_PROG_AR` necessary for autoconf 1.12.
@@ -183,21 +183,21 @@
 - Added debug level for all masters as a module parameter. Thanks to Erwin
   Burgstaller.
 - Clear slave list on link down.
-- Output device link state in 'ethercat master'.
-- Added 'ethercat graph' command which outputs the bus topology in
+- Output device link state in `ethercat master`.
+- Added `ethercat graph` command which outputs the bus topology in
   DOT language.
 - Changed `EC_MAX_SII_SIZE` to 4096.
-- 'ethercat xml' creates valid XML <EtherCATInfoList> for more than one slave
+- `ethercat xml` creates valid XML <EtherCATInfoList> for more than one slave
   (thanks to E. Burgstaller).
-- Added 'ethercat eoe' command to display Ethernet over EtherCAT statistics.
-- Added 'ethercat cstruct' command to output PDO information in C language.
+- Added `ethercat eoe` command to display Ethernet over EtherCAT statistics.
+- Added `ethercat cstruct` command to output PDO information in C language.
 - Significantly improved EoE bandwidth by running EoE processing in a kthread.
 - Switched version control from Subversion to Mercurial.
 - Implemented CompleteAccess for SDO downloads.
-- ethercat tool is now able to handle multiple masters. The --masters option
-  supports ranges like '0,3,8-10'.
+- ethercat tool is now able to handle multiple masters. The `--masters` option
+  supports ranges like `0,3,8-10`.
 - A sync manager is always enabled, if it contains registered process data.
-- Added a configuration switch --enable-wildcards to use 0xffffffff as a
+- Added a configuration switch `--enable-wildcards` to use `0xffffffff` as a
   wildcard for vendor ID and product code.
 - Added support for systemd.
 
@@ -224,7 +224,7 @@
 - Ported the master thread to the kthread interface.
 - Added missing semaphore `up()` in an `ioctl()`. In rare cases, the master
   semaphore was not released.
-- Minor fix in 'slaves' command that fixed duplicate display of supported
+- Minor fix in `slaves` command that fixed duplicate display of supported
   mailbox protocols.
 - The SDO Information Service is only queried, if the slave has the
   corresponding SII bit set.
@@ -309,7 +309,7 @@
     - Request slave states.
     - Generate slave information xmls.
 - Removed include/ecdb.h.
-- Using the timestamp counter is now optional (configure --enable-cycles),
+- Using the timestamp counter is now optional (configure `--enable-cycles`),
   because it is only available on Intel architectures.
 - SDO dictionaries will now also be fetched in operation mode.
 - SII write requests will now also be processed in operation mode.
@@ -455,7 +455,7 @@
     supply a poll function to call its ISR. This was introduced because some
     network drivers' interrupt functions have different arguments.
 - State machines now try to re-send datagrams on datagram timeout.
-- New option -c of the `lsec` script, displays slave current consumptions and
+- New option `-c` of the `lsec` script, displays slave current consumptions and
   remaining current.
 - Added frame counter in master info file.
 

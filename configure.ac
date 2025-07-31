@@ -24,13 +24,11 @@ AC_PREREQ([2.59])
 #
 # Release procedure
 # - Update Ethernet drivers up to release kernel version
-# - Write NEWS entry with changes since last release
+# - Write NEWS.md entry with changes since last release
 # - Check for complete Doxygen comments
-# - Update the ChangeLog -> git log > ChangeLog
 # - Update version number below
-# - make dist-bzip2
 #
-AC_INIT([ethercat], [1.6.6], [fp@igh.de])
+AC_INIT([ethercat], [1.6.7], [fp@igh.de])
 AC_CONFIG_AUX_DIR([autoconf])
 AM_INIT_AUTOMAKE([-Wall -Wno-override -Werror dist-bzip2 subdir-objects foreign])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])

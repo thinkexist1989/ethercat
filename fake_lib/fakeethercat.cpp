@@ -617,6 +617,9 @@ int ecrt_slave_config_sync_manager(
         ec_watchdog_mode_t watchdog_mode /** Watchdog mode. */
 )
 {
+    auto &syncManager = sc->sync_managers[sync_index];
+    syncManager.dir = direction;
+
     return 0;
 }
 

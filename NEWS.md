@@ -1,3 +1,7 @@
+# Version 1.6.8
+
+- Fixed usage of `FAKE_EC_HOMEDIR` variable in fake library.
+
 # Version 1.6.7
 
 - Completed API methods in fake library

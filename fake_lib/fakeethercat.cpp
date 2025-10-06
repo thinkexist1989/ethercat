@@ -573,11 +573,11 @@ static int mkpath(const std::string &file_path)
 
 static std::string getRtIpcDir(int idx)
 {
-    std::string ans;
+    std::string ans("/tmp/FakeEtherCAT");
     if (const auto e = getenv("FAKE_EC_HOMEDIR")) {
-        ans = e + std::string("/") + std::to_string(idx);
+        ans = e;
     }
-    ans = "/tmp/FakeEtherCAT/" + std::to_string(idx);
+    ans += std::string("/") + std::to_string(idx);
     mkpath(ans);
     return ans;
 }

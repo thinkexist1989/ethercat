@@ -9,14 +9,16 @@ data level by running two applications back to back.
 
 ## Supported features
 
-Currently, only a very limited subset of libethercat functionality is
-supported:
+Although the library implements the complete API (to avoid undefined
+references), most function calls will just do nothing and return no error.
+However, some methods have a bit of logic implemented to simulate a working
+master. This is what is possible:
 
  - Creating master and domain instances
- - Activating master, `send`/`receive`.
+ - Activating master, `send()` and `receive()`.
  - Processing and queuing domains
  - Configuring PDOs
- - Configuring SDOs using `ecrt_slave_config_sdo*`
+ - Configuring SDOs using `ecrt_slave_config_sdo*()`
 
 The SDO config does not do anything, but when activating the master the SDO
 config will be dumped into a JSON file.

@@ -1398,6 +1398,32 @@ AM_CONDITIONAL(HAVE_SYSTEMD, test "x$with_systemdsystemunitdir" != "x")
 AC_SUBST(systemdsystemunitdir, [$with_systemdsystemunitdir])
 
 #-----------------------------------------------------------------------------
+# System utilities
+#-----------------------------------------------------------------------------
+
+AC_ARG_WITH([kmod-dir],
+    AS_HELP_STRING([--with-kmod-dir=<DIR>],
+                   [Path to kernel module utilities [default=/sbin]]),
+    [kmoddir=[$withval]],
+    [kmoddir="/sbin"]
+)
+
+AC_MSG_CHECKING([for path to kernel modules])
+AC_MSG_RESULT([$kmoddir])
+AC_SUBST(kmoddir, [$kmoddir])
+
+AC_ARG_WITH([ip-cmd],
+    AS_HELP_STRING([--with-ip-cmd=<CMD>],
+                   ['ip' command to use [default=/bin/ip]]),
+    [ipcmd=[$withval]],
+    [ipcmd="/bin/ip"]
+)
+
+AC_MSG_CHECKING([for ip command])
+AC_MSG_RESULT([$ipcmd])
+AC_SUBST(ipcmd, [$ipcmd])
+
+#-----------------------------------------------------------------------------
 
 AC_CONFIG_FILES([
         Doxyfile

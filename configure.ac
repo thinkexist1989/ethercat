@@ -1414,9 +1414,9 @@ AC_SUBST(kmoddir, [$kmoddir])
 
 AC_ARG_WITH([ip-cmd],
     AS_HELP_STRING([--with-ip-cmd=<CMD>],
-                   ['ip' command to use [default=/bin/ip]]),
+                   ['ip' command to use [default=/sbin/ip]]),
     [ipcmd=[$withval]],
-    [ipcmd="/bin/ip"]
+    [ipcmd="/sbin/ip"]
 )
 
 AC_MSG_CHECKING([for ip command])

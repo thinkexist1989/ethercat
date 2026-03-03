@@ -1,3 +1,9 @@
+# Since 1.6.8
+
+- Added `--with-kmod-dir` and `--with-ip-cmd` configuration switches
+  to specify the paths of the tools used in the `ethercatctl` script.
+- Changed the default path of the `ip` command to `/sbin/ip`.
+
 # Version 1.6.8
 
 - Fixed usage of `FAKE_EC_HOMEDIR` variable in fake library.

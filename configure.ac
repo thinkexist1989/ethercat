@@ -107,6 +107,11 @@ AC_ARG_WITH([linux-dir],
 
 AC_MSG_CHECKING([for Linux kernel sources])
 
+if test \! -r ${sourcedir}/Makefile; then
+    echo
+    AC_MSG_ERROR([No Linux kernel sources in $sourcedir])
+fi
+
 # Try to get kernel release string
 if test -r ${sourcedir}/include/config/kernel.release; then
     kernelrelease=`cat $sourcedir/include/config/kernel.release`

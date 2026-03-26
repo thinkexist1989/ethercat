@@ -61,6 +61,23 @@
           rt_mutex_lock_interruptible(lock, 0)
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 47)
+
+#define smp_store_release(p, v) \
+do { \
+	smp_mb(); \
+	ACCESS_ONCE(*p) = (v); \
+} while (0)
+
+#define smp_load_acquire(p)	\
+({ \
+	typeof(*p) ___p1 = ACCESS_ONCE(*p); \
+	smp_mb(); \
+	___p1; \
+})
+
+#endif
+
 #include "master.h"
 
 /****************************************************************************/
@@ -195,6 +212,7 @@ int ec_master_init(ec_master_t *master, /**< EtherCAT master */
     master->phase = EC_ORPHANED;
     master->active = 0;
     master->config_changed = 0;
+
     master->injection_seq_fsm = 0;
     master->injection_seq_rt = 0;
 
@@ -1596,6 +1614,7 @@ static int ec_master_idle_thread(void *priv_data)
 static int ec_master_operation_thread(void *priv_data)
 {
     ec_master_t *master = (ec_master_t *) priv_data;
+    unsigned int seq_rt;
 
     EC_MASTER_DBG(master, 1, "Operation thread running"
             " with fsm interval = %u us, max data size=%zu\n",
@@ -1604,7 +1623,11 @@ static int ec_master_operation_thread(void *priv_data)
     while (!kthread_should_stop()) {
         ec_datagram_output_stats(&master->fsm_datagram);
 
-        if (master->injection_seq_rt == master->injection_seq_fsm) {
+        /* Use smp_load_acquire() to prevent re-ordering.
+         * https://gitlab.com/etherlab.org/ethercat/-/work_items/168 */
+        seq_rt = smp_load_acquire(&master->injection_seq_rt);
+        if (seq_rt == master->injection_seq_fsm) { // was injected
+
             // output statistics
             ec_master_output_stats(master);
 
@@ -1616,7 +1639,9 @@ static int ec_master_operation_thread(void *priv_data)
             if (ec_fsm_master_exec(&master->fsm)) {
                 // Inject datagrams (let the RT thread queue them, see
                 // ecrt_master_send())
-                master->injection_seq_fsm++;
+                // re-ordering-safe version of `master->injection_seq_fsm++`
+                smp_store_release(&master->injection_seq_fsm,
+                        master->injection_seq_fsm + 1);
             }
 
             ec_master_exec_slave_fsms(master);
@@ -2436,11 +2461,14 @@ int ecrt_master_send(ec_master_t *master)
 {
     ec_datagram_t *datagram, *n;
     ec_device_index_t dev_idx;
+    unsigned int seq_fsm;
 
-    if (master->injection_seq_rt != master->injection_seq_fsm) {
+    seq_fsm = smp_load_acquire(&master->injection_seq_fsm);
+    if (master->injection_seq_rt != seq_fsm) {
         // inject datagram produced by master FSM
         ec_master_queue_datagram(master, &master->fsm_datagram);
-        master->injection_seq_rt = master->injection_seq_fsm;
+
+        smp_store_release(&master->injection_seq_rt, seq_fsm);
     }
 
     ec_master_inject_external_datagrams(master);

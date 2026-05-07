@@ -54,6 +54,10 @@ EXTRA_DIST = \
 	e1000_82575-6.4-ethercat.h \
 	e1000_82575-6.4-orig.c \
 	e1000_82575-6.4-orig.h \
+	e1000_82575-6.8-ethercat.c \
+	e1000_82575-6.8-orig.c \
+	e1000_82575-6.8-ethercat.h \
+	e1000_82575-6.8-orig.h \
 	e1000_82575-6.12-ethercat.c \
 	e1000_82575-6.12-ethercat.h \
 	e1000_82575-6.12-orig.c \
@@ -74,6 +78,8 @@ EXTRA_DIST = \
 	e1000_defines-6.1-orig.h \
 	e1000_defines-6.4-ethercat.h \
 	e1000_defines-6.4-orig.h \
+	e1000_defines-6.8-ethercat.h \
+	e1000_defines-6.8-orig.h \
 	e1000_defines-6.12-ethercat.h \
 	e1000_defines-6.12-orig.h \
 	e1000_hw-3.18-ethercat.h \
@@ -92,6 +98,8 @@ EXTRA_DIST = \
 	e1000_hw-6.1-orig.h \
 	e1000_hw-6.4-ethercat.h \
 	e1000_hw-6.4-orig.h \
+	e1000_hw-6.8-ethercat.h \
+	e1000_hw-6.8-orig.h \
 	e1000_hw-6.12-ethercat.h \
 	e1000_hw-6.12-orig.h \
 	e1000_i210-3.18-ethercat.c \
@@ -126,6 +134,10 @@ EXTRA_DIST = \
 	e1000_i210-6.4-ethercat.h \
 	e1000_i210-6.4-orig.c \
 	e1000_i210-6.4-orig.h \
+	e1000_i210-6.8-ethercat.c \
+	e1000_i210-6.8-ethercat.h \
+	e1000_i210-6.8-orig.c \
+	e1000_i210-6.8-orig.h \
 	e1000_i210-6.12-ethercat.c \
 	e1000_i210-6.12-ethercat.h \
 	e1000_i210-6.12-orig.c \
@@ -162,6 +174,10 @@ EXTRA_DIST = \
 	e1000_mac-6.4-ethercat.h \
 	e1000_mac-6.4-orig.c \
 	e1000_mac-6.4-orig.h \
+	e1000_mac-6.8-ethercat.c \
+	e1000_mac-6.8-ethercat.h \
+	e1000_mac-6.8-orig.c \
+	e1000_mac-6.8-orig.h \
 	e1000_mac-6.12-ethercat.c \
 	e1000_mac-6.12-ethercat.h \
 	e1000_mac-6.12-orig.c \
@@ -198,6 +214,10 @@ EXTRA_DIST = \
 	e1000_mbx-6.4-ethercat.h \
 	e1000_mbx-6.4-orig.c \
 	e1000_mbx-6.4-orig.h \
+	e1000_mbx-6.8-ethercat.c \
+	e1000_mbx-6.8-ethercat.h \
+	e1000_mbx-6.8-orig.c \
+	e1000_mbx-6.8-orig.h \
 	e1000_mbx-6.12-ethercat.c \
 	e1000_mbx-6.12-ethercat.h \
 	e1000_mbx-6.12-orig.c \
@@ -234,6 +254,10 @@ EXTRA_DIST = \
 	e1000_nvm-6.4-ethercat.h \
 	e1000_nvm-6.4-orig.c \
 	e1000_nvm-6.4-orig.h \
+	e1000_nvm-6.8-ethercat.c \
+	e1000_nvm-6.8-orig.h \
+	e1000_nvm-6.8-orig.c \
+	e1000_nvm-6.8-orig.h \
 	e1000_nvm-6.12-ethercat.c \
 	e1000_nvm-6.12-ethercat.h \
 	e1000_nvm-6.12-orig.c \
@@ -270,6 +294,10 @@ EXTRA_DIST = \
 	e1000_phy-6.4-ethercat.h \
 	e1000_phy-6.4-orig.h \
 	e1000_phy-6.4-orig.h \
+	e1000_phy-6.8-ethercat.c \
+	e1000_phy-6.8-ethercat.h \
+	e1000_phy-6.8-orig.c \
+	e1000_phy-6.8-orig.h \
 	e1000_phy-6.12-ethercat.c \
 	e1000_phy-6.12-ethercat.h \
 	e1000_phy-6.12-orig.c \
@@ -290,6 +318,8 @@ EXTRA_DIST = \
 	e1000_regs-6.1-orig.h \
 	e1000_regs-6.4-ethercat.h \
 	e1000_regs-6.4-orig.h \
+	e1000_regs-6.8-ethercat.h \
+	e1000_regs-6.8-orig.h \
 	e1000_regs-6.12-ethercat.h \
 	e1000_regs-6.12-orig.h \
 	igb-3.18-ethercat.h \
@@ -308,6 +338,8 @@ EXTRA_DIST = \
 	igb-6.1-orig.h \
 	igb-6.4-ethercat.h \
 	igb-6.4-orig.h \
+	igb-6.8-ethercat.h \
+	igb-6.8-orig.h \
 	igb-6.12-ethercat.h \
 	igb-6.12-orig.h \
 	igb_ethtool-3.18-ethercat.c \
@@ -324,6 +356,8 @@ EXTRA_DIST = \
 	igb_ethtool-5.15-orig.c \
 	igb_ethtool-6.1-ethercat.c \
 	igb_ethtool-6.1-orig.c \
+	igb_ethtool-6.8-ethercat.c \
+	igb_ethtool-6.8-orig.c \
 	igb_ethtool-6.12-ethercat.c \
 	igb_ethtool-6.12-orig.c \
 	igb_hwmon-3.18-ethercat.c \
@@ -342,6 +376,8 @@ EXTRA_DIST = \
 	igb_hwmon-6.1-orig.c \
 	igb_hwmon-6.4-ethercat.c \
 	igb_hwmon-6.4-orig.c \
+	igb_hwmon-6.8-ethercat.c \
+	igb_hwmon-6.8-orig.c \
 	igb_hwmon-6.12-ethercat.c \
 	igb_hwmon-6.12-orig.c \
 	igb_main-3.18-ethercat.c \
@@ -360,6 +396,8 @@ EXTRA_DIST = \
 	igb_main-6.1-orig.c \
 	igb_main-6.4-ethercat.c \
 	igb_main-6.4-orig.c \
+	igb_main-6.8-ethercat.c \
+	igb_main-6.8-orig.c \
 	igb_main-6.12-ethercat.c \
 	igb_main-6.12-orig.c \
 	igb_ptp-3.18-ethercat.c \
@@ -378,6 +416,8 @@ EXTRA_DIST = \
 	igb_ptp-6.1-orig.c \
 	igb_ptp-6.4-ethercat.c \
 	igb_ptp-6.4-orig.c \
+	igb_ptp-6.8-ethercat.c \
+	igb_ptp-6.8-orig.c \
 	igb_ptp-6.12-ethercat.c \
 	igb_ptp-6.12-orig.c \
 	update.sh

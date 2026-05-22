@@ -18,19 +18,6 @@
 
 #include "igb-6.8-ethercat.h"
 
-
-#ifdef CONFIG_SUSE_KERNEL
-#include <linux/suse_version.h>
-#else
-#  ifndef SUSE_VERSION
-#    define SUSE_VERSION 0
-#  endif
-#  ifndef SUSE_PATCHLEVEL
-#    define SUSE_PATCHLEVEL 0
-#  endif
-#endif
-
-
 struct igb_stats {
 	char stat_string[ETH_GSTRING_LEN];
 	int sizeof_stat;

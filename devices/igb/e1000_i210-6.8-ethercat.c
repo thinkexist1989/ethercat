@@ -8,6 +8,7 @@
 #include <linux/bitfield.h>
 #include <linux/if_ether.h>
 #include <linux/types.h>
+
 #include "e1000_hw-6.8-ethercat.h"
 #include "e1000_i210-6.8-ethercat.h"
 

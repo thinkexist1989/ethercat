@@ -4,6 +4,7 @@
 #include <linux/bitfield.h>
 #include <linux/delay.h>
 #include <linux/if_ether.h>
+
 #include "e1000_mac-6.8-ethercat.h"
 #include "e1000_nvm-6.8-ethercat.h"
 

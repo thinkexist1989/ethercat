@@ -37,6 +37,7 @@
 #include <linux/dca.h>
 #endif
 #include <linux/i2c.h>
+
 #include "igb-6.8-ethercat.h"
 
 enum queue_mode {

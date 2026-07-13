@@ -799,7 +799,8 @@ void ec_fsm_foe_state_data_read(
     }
 
     if (rec_size < EC_FOE_HEADER_SIZE) {
-        EC_SLAVE_ERR(slave, "Received invalid FoE mailbox data size.\n");
+        EC_SLAVE_ERR(slave, "Received corrupted FoE size (%zu bytes)!\n",
+                rec_size);
         ec_foe_set_rx_error(fsm, FOE_PROT_ERROR);
         return;
     }

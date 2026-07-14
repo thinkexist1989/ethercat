@@ -32,7 +32,7 @@ make
 ```
 
 The PDF is automatically held up-to-date and can be [downloaded from
-GitLab](https://gitlab.com/etherlab.org/ethercat/-/jobs/artifacts/stable-1.5/raw/pdf/ethercat_doc.pdf?job=pdf).
+GitLab](https://gitlab.com/etherlab.org/ethercat/-/jobs/artifacts/stable-1.6/raw/pdf/ethercat_doc.pdf?job=pdf).
 
 ### Doxygen
 

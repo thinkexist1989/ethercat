@@ -1,3 +1,13 @@
+# Version 1.6.10
+
+- Added RasPi 5 macb (Cadence GEM / RP1) driver for kernel 6.18.
+- Added igb and igc for kernel 6.8
+- Security fixes against malicious subdevices
+    - Protected `rec_size` calculation in FoE.
+    - Check for malicious EoE frame details.
+- Avoid writing invalid MAC onto r8169 NIC on removal
+- Fixed unsufficient re-allocation of SoE request buffer.
+
 # Version 1.6.9
 
 - Protect datagram injection mechanism against re-ordering.
@@ -503,3 +513,19 @@
 
 
 vim: spelllang=en spell tw=78
+*   commit a6b03ffeaa75b1cf778b55ad15f09de340333ad3
+|\  Merge: 6e60da92 e257b4af
+| | Author: Florian Pose <fp@igh.de>
+| | Date:   Tue Jul 14 17:07:29 2026 +0200
+| | 
+| |     Merge branch 'security-fixes' into 'stable-1.6'
+| |     
+| |     Security fixes
+| |     
+| |     See merge request etherlab.org/ethercat!200
+| | 
+| * commit e257b4af52692913a8a65b32d7888f24de8900e1
+| | Author: Florian Pose <fp@igh.de>
+| | Date:   Mon Jul 13 15:01:12 2026 +0200
+| | 
+| | 

@@ -13,10 +13,10 @@ information, see [etherlab.org/ethercat](https://etherlab.org/ethercat).
 
 or contact
 
-> Dipl.-Ing. (FH) Florian Pose <fp@igh.de>
-> Ingenieurgemeinschaft IgH
-> Nordsternstraße 66
-> D-45329 Essen
+> Dipl.-Ing. (FH) [Florian Pose](mailto:fp@igh.de)\
+> Ingenieurgemeinschaft IgH\
+> Nordsternstraße 66\
+> D-45329 Essen\
 > [igh.de](http://igh.de)
 
 ## Documentation

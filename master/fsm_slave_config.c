@@ -1464,7 +1464,7 @@ void ec_fsm_slave_config_state_dc_sync_check(
         return;
     }
 
-    if (datagram->working_counter != 1) {
+    if (smp_load_acquire(&datagram->working_counter) != 1) {
         slave->error_flag = 1;
         fsm->state = ec_fsm_slave_config_state_error;
         EC_SLAVE_ERR(slave, "Failed to check DC synchrony: ");

@@ -1,6 +1,6 @@
 /*****************************************************************************
  *
- *  Copyright (C) 2006-2020  Florian Pose, Ingenieurgemeinschaft IgH
+ *  Copyright (C) 2006-2026  Florian Pose, Ingenieurgemeinschaft IgH
  *
  *  This file is part of the IgH EtherCAT Master.
  *
@@ -1260,17 +1260,19 @@ void ec_master_receive_datagrams(
         cur_data += data_size;
 
         // set the datagram's working counter
-        datagram->working_counter = EC_READ_U16(cur_data);
+        smp_store_release(&datagram->working_counter, EC_READ_U16(cur_data));
         cur_data += EC_DATAGRAM_FOOTER_SIZE;
 
-        // dequeue the received datagram
-        datagram->state = EC_DATAGRAM_RECEIVED;
+        // set the state and receive time
+        smp_store_release(&datagram->state, EC_DATAGRAM_RECEIVED);
 #ifdef EC_HAVE_CYCLES
         datagram->cycles_received =
             master->devices[EC_DEVICE_MAIN].cycles_poll;
 #endif
         datagram->jiffies_received =
             master->devices[EC_DEVICE_MAIN].jiffies_poll;
+
+        // dequeue the received datagram
         list_del_init(&datagram->queue);
     }
 }

@@ -102,7 +102,7 @@ the IgH EtherCAT Master; if not, write to the Free Software Foundation, Inc.,
 
 ## I have a question / I want to contribute
 
-Please see the [contributiong document](CONTRIBUTING.md).
+Please see the [contributing document](CONTRIBUTING.md).
 
 ## Coding Style
 

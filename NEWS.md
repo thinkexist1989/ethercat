@@ -513,19 +513,3 @@
 
 
 vim: spelllang=en spell tw=78
-*   commit a6b03ffeaa75b1cf778b55ad15f09de340333ad3
-|\  Merge: 6e60da92 e257b4af
-| | Author: Florian Pose <fp@igh.de>
-| | Date:   Tue Jul 14 17:07:29 2026 +0200
-| | 
-| |     Merge branch 'security-fixes' into 'stable-1.6'
-| |     
-| |     Security fixes
-| |     
-| |     See merge request etherlab.org/ethercat!200
-| | 
-| * commit e257b4af52692913a8a65b32d7888f24de8900e1
-| | Author: Florian Pose <fp@igh.de>
-| | Date:   Mon Jul 13 15:01:12 2026 +0200
-| | 
-| | 

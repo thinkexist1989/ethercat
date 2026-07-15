@@ -1100,12 +1100,12 @@ void ec_master_send_datagrams(
 
         // set datagram states and sending timestamps
         list_for_each_entry_safe(datagram, next, &sent_datagrams, sent) {
-            smp_store_release(&datagram->state, EC_DATAGRAM_SENT);
 #ifdef EC_HAVE_CYCLES
             datagram->cycles_sent = cycles_sent;
 #endif
             datagram->jiffies_sent = jiffies_sent;
-            list_del_init(&datagram->sent); // empty list of sent datagrams
+            list_del_init(&datagram->sent); // remove from sent queue
+            smp_store_release(&datagram->state, EC_DATAGRAM_SENT);
         }
 
         frame_count++;
@@ -1257,11 +1257,11 @@ void ec_master_receive_datagrams(
         datagram->jiffies_received =
             master->devices[EC_DEVICE_MAIN].jiffies_poll;
 
-        // set the state with a barrier
-        smp_store_release(&datagram->state, EC_DATAGRAM_RECEIVED);
-
         // dequeue the received datagram
         list_del_init(&datagram->queue);
+
+        // set the state (with a barrier)
+        smp_store_release(&datagram->state, EC_DATAGRAM_RECEIVED);
     }
 }
 
@@ -2466,8 +2466,8 @@ int ecrt_master_send(ec_master_t *master)
             list_for_each_entry_safe(datagram, n,
                     &master->datagram_queue, queue) {
                 if (datagram->device_index == dev_idx) {
-                    smp_store_release(&datagram->state, EC_DATAGRAM_ERROR);
                     list_del_init(&datagram->queue);
+                    smp_store_release(&datagram->state, EC_DATAGRAM_ERROR);
                 }
             }
 

@@ -8,7 +8,7 @@
   - Protected `rec_size` calculation in FoE.
   - Check for malicious EoE frame details.
 - Avoid writing invalid MAC onto r8169 NIC on removal
-- Fixed unsufficient re-allocation of SoE request buffer.
+- Fixed insufficient re-allocation of SoE request buffer.
 
 ## Version 1.6.9
 

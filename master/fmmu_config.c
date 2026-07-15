@@ -39,7 +39,7 @@
  * process data size for the mapped PDOs of the given direction to the domain
  * data size.
  */
-void ec_fmmu_config_init(
+int ec_fmmu_config_init(
         ec_fmmu_config_t *fmmu, /**< EtherCAT FMMU configuration. */
         ec_slave_config_t *sc, /**< EtherCAT slave configuration. */
         ec_domain_t *domain, /**< EtherCAT domain. */
@@ -56,7 +56,15 @@ void ec_fmmu_config_init(
     fmmu->data_size = ec_pdo_list_total_size(
             &sc->sync_configs[sync_index].pdos);
 
+    if (fmmu->data_size > EC_MAX_DATA_SIZE) {
+        EC_CONFIG_ERR(fmmu->sc, "FMMU with data size %3u bytes would exceed"
+                " maximum datagram size (%u bytes).\n",
+                fmmu->data_size, EC_MAX_DATA_SIZE);
+        return -ENOMEM;
+    }
+
     ec_domain_add_fmmu_config(domain, fmmu);
+    return 0;
 }
 
 /****************************************************************************/
@@ -77,13 +85,13 @@ void ec_fmmu_config_page(
             sync->physical_start_address, fmmu->sync_index,
             fmmu->dir == EC_DIR_INPUT ? "in" : "out");
 
-    EC_WRITE_U32(data,      fmmu->logical_start_address);
-    EC_WRITE_U16(data + 4,  fmmu->data_size); // size of fmmu
-    EC_WRITE_U8 (data + 6,  0x00); // logical start bit
-    EC_WRITE_U8 (data + 7,  0x07); // logical end bit
-    EC_WRITE_U16(data + 8,  sync->physical_start_address);
-    EC_WRITE_U8 (data + 10, 0x00); // physical start bit
-    EC_WRITE_U8 (data + 11, fmmu->dir == EC_DIR_INPUT ? 0x01 : 0x02);
+    EC_WRITE_U32(data, fmmu->logical_start_address);
+    EC_WRITE_U16(data + 4, fmmu->data_size); // size of fmmu
+    EC_WRITE_U8(data + 6, 0x00); // logical start bit
+    EC_WRITE_U8(data + 7, 0x07); // logical end bit
+    EC_WRITE_U16(data + 8, sync->physical_start_address);
+    EC_WRITE_U8(data + 10, 0x00); // physical start bit
+    EC_WRITE_U8(data + 11, fmmu->dir == EC_DIR_INPUT ? 0x01 : 0x02);
     EC_WRITE_U16(data + 12, 0x0001); // enable
     EC_WRITE_U16(data + 14, 0x0000); // reserved
 }

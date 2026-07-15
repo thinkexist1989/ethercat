@@ -1,6 +1,6 @@
 /*****************************************************************************
  *
- *  Copyright (C) 2006-2008  Florian Pose, Ingenieurgemeinschaft IgH
+ *  Copyright (C) 2006-2026  Florian Pose, Ingenieurgemeinschaft IgH
  *
  *  This file is part of the IgH EtherCAT Master.
  *
@@ -25,8 +25,8 @@
 
 /****************************************************************************/
 
-#ifndef __EC_FMMU_CONFIG_H__
-#define __EC_FMMU_CONFIG_H__
+#ifndef MASTER_FMMU_CONFIG_H_
+#define MASTER_FMMU_CONFIG_H_
 
 #include "globals.h"
 #include "sync.h"
@@ -47,7 +47,7 @@ typedef struct {
 
 /****************************************************************************/
 
-void ec_fmmu_config_init(ec_fmmu_config_t *, ec_slave_config_t *,
+int ec_fmmu_config_init(ec_fmmu_config_t *, ec_slave_config_t *,
         ec_domain_t *, uint8_t, ec_direction_t);
 
 void ec_fmmu_config_page(const ec_fmmu_config_t *, const ec_sync_t *,
@@ -55,4 +55,4 @@ void ec_fmmu_config_page(const ec_fmmu_config_t *, const ec_sync_t *,
 
 /****************************************************************************/
 
-#endif
+#endif  // MASTER_FMMU_CONFIG_H_

@@ -43,6 +43,7 @@
 #include "slave_config.h"
 #include "device.h"
 #include "datagram.h"
+#include "smp.h"
 
 #ifdef EC_EOE
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)

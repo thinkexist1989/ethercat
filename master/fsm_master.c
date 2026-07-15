@@ -32,6 +32,7 @@
 #ifdef EC_EOE
 #include "ethernet.h"
 #endif
+#include "smp.h"
 
 #include "fsm_master.h"
 #include "fsm_foe.h"

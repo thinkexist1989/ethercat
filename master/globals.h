@@ -24,13 +24,11 @@
 
 /****************************************************************************/
 
-#ifndef __EC_MASTER_GLOBALS_H__
-#define __EC_MASTER_GLOBALS_H__
+#ifndef MASTER_GLOBALS_H_
+#define MASTER_GLOBALS_H_
 
 #include "../globals.h"
 #include "../include/ecrt.h"
-
-#include <linux/version.h>
 
 /*****************************************************************************
  * EtherCAT master
@@ -173,8 +171,7 @@ typedef struct {
  */
 typedef enum {
     EC_DC_32, /**< 32 bit. */
-    EC_DC_64 /*< 64 bit for system time, system time offset and
-               port 0 receive time. */
+    EC_DC_64 /*< 64 bit for system time, time offset and port receive time. */
 } ec_slave_dc_range_t;
 
 /** EtherCAT slave sync signal configuration.
@@ -254,28 +251,6 @@ extern const char *ec_device_names[2]; // only main and backup!
 
 /****************************************************************************/
 
-/* Define SMP macros on kernel versions where they did not exist yet.
- */
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 47)
-
-#define smp_store_release(p, v) \
-do { \
-    smp_mb(); \
-    ACCESS_ONCE(*p) = (v); \
-} while (0)
-
-#define smp_load_acquire(p) \
-({ \
-    typeof(*p) ___p1 = ACCESS_ONCE(*p); \
-    smp_mb(); \
-    ___p1; \
-})
-
-#endif
-
-/****************************************************************************/
-
 extern char *ec_master_version_str;
 
 /****************************************************************************/
@@ -335,4 +310,4 @@ typedef struct ec_slave ec_slave_t; /**< \see ec_slave. */
 
 /****************************************************************************/
 
-#endif
+#endif  // MASTER_GLOBALS_H_

@@ -863,7 +863,7 @@ void ec_master_inject_external_datagrams(
             queue_size = new_queue_size;
         }
         else if (datagram->data_size > master->max_queue_size) {
-            datagram->state = EC_DATAGRAM_ERROR;
+            smp_store_release(&datagram->state, EC_DATAGRAM_ERROR);
             EC_MASTER_ERR(master, "External datagram %s is too large,"
                     " size=%zu, max_queue_size=%zu\n",
                     datagram->name, datagram->data_size,
@@ -884,7 +884,7 @@ void ec_master_inject_external_datagrams(
                 unsigned int time_us;
 #endif
 
-                datagram->state = EC_DATAGRAM_ERROR;
+                smp_store_release(&datagram->state, EC_DATAGRAM_ERROR);
 
 #if defined EC_RT_SYSLOG || DEBUG_INJECT
 #ifdef EC_HAVE_CYCLES
@@ -981,13 +981,13 @@ void ec_master_queue_datagram(
             EC_MASTER_DBG(master, 1,
                     "Datagram %p already queued (skipping).\n", datagram);
 #endif
-            datagram->state = EC_DATAGRAM_QUEUED;
+            smp_store_release(&datagram->state, EC_DATAGRAM_QUEUED);
             return;
         }
     }
 
     list_add_tail(&datagram->queue, &master->datagram_queue);
-    datagram->state = EC_DATAGRAM_QUEUED;
+    smp_store_release(&datagram->state, EC_DATAGRAM_QUEUED);
 }
 
 /****************************************************************************/
@@ -1116,7 +1116,7 @@ void ec_master_send_datagrams(
 
         // set datagram states and sending timestamps
         list_for_each_entry_safe(datagram, next, &sent_datagrams, sent) {
-            datagram->state = EC_DATAGRAM_SENT;
+            smp_store_release(&datagram->state, EC_DATAGRAM_SENT);
 #ifdef EC_HAVE_CYCLES
             datagram->cycles_sent = cycles_sent;
 #endif
@@ -1262,17 +1262,19 @@ void ec_master_receive_datagrams(
         cur_data += data_size;
 
         // set the datagram's working counter
-        smp_store_release(&datagram->working_counter, EC_READ_U16(cur_data));
+        datagram->working_counter = EC_READ_U16(cur_data);
         cur_data += EC_DATAGRAM_FOOTER_SIZE;
 
-        // set the state and receive time
-        smp_store_release(&datagram->state, EC_DATAGRAM_RECEIVED);
+        // set the receive time
 #ifdef EC_HAVE_CYCLES
         datagram->cycles_received =
             master->devices[EC_DEVICE_MAIN].cycles_poll;
 #endif
         datagram->jiffies_received =
             master->devices[EC_DEVICE_MAIN].jiffies_poll;
+
+        // set the state with a barrier
+        smp_store_release(&datagram->state, EC_DATAGRAM_RECEIVED);
 
         // dequeue the received datagram
         list_del_init(&datagram->queue);
@@ -2480,7 +2482,7 @@ int ecrt_master_send(ec_master_t *master)
             list_for_each_entry_safe(datagram, n,
                     &master->datagram_queue, queue) {
                 if (datagram->device_index == dev_idx) {
-                    datagram->state = EC_DATAGRAM_ERROR;
+                    smp_store_release(&datagram->state, EC_DATAGRAM_ERROR);
                     list_del_init(&datagram->queue);
                 }
             }
@@ -2529,7 +2531,7 @@ int ecrt_master_receive(ec_master_t *master)
                 datagram->jiffies_sent > timeout_jiffies) {
 #endif
             list_del_init(&datagram->queue);
-            datagram->state = EC_DATAGRAM_TIMED_OUT;
+            smp_store_release(&datagram->state, EC_DATAGRAM_TIMED_OUT);
             master->stats.timeouts++;
 
 #ifdef EC_RT_SYSLOG

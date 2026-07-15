@@ -30,6 +30,8 @@
 #include "../globals.h"
 #include "../include/ecrt.h"
 
+#include <linux/version.h>
+
 /*****************************************************************************
  * EtherCAT master
  ****************************************************************************/
@@ -249,6 +251,28 @@ extern const char *ec_device_names[2]; // only main and backup!
 /** Absolute value.
  */
 #define EC_ABS(X) ((X) >= 0 ? (X) : -(X))
+
+/****************************************************************************/
+
+/* Define SMP macros on kernel versions where they did not exist yet.
+ */
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 47)
+
+#define smp_store_release(p, v) \
+do { \
+    smp_mb(); \
+    ACCESS_ONCE(*p) = (v); \
+} while (0)
+
+#define smp_load_acquire(p) \
+({ \
+    typeof(*p) ___p1 = ACCESS_ONCE(*p); \
+    smp_mb(); \
+    ___p1; \
+})
+
+#endif
 
 /****************************************************************************/
 

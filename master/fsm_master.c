@@ -174,7 +174,7 @@ int ec_fsm_master_exec(
         ec_fsm_master_t *fsm /**< Master state machine. */
         )
 {
-    ec_datagram_state_t state = smp_load_acquire(&datagram->state);
+    ec_datagram_state_t state = smp_load_acquire(&fsm->datagram->state);
 
     if (state == EC_DATAGRAM_SENT || state == EC_DATAGRAM_QUEUED) {
         // datagram was not sent or received yet.

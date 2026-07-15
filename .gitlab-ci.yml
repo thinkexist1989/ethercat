@@ -20,10 +20,11 @@ pre-commit:
       - pip install pre-commit
 
     script:
-      - pre-commit run \
-          --from-ref origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME \
-          --to-ref HEAD \
-          --show-diff-on-failure
+      - |
+          pre-commit run \
+            --from-ref origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME \
+            --to-ref HEAD \
+            --show-diff-on-failure
 
     rules:
       - if: $CI_PIPELINE_SOURCE == "merge_request_event"

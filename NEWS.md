@@ -1,5 +1,7 @@
 # Version History
 
+- Protect datagram receiving mechanism against re-ordering.
+
 ## Version 1.6.10
 
 - Added RasPi 5 macb (Cadence GEM / RP1) driver for kernel 6.18.

@@ -1,6 +1,6 @@
 /*****************************************************************************
  *
- *  Copyright (C) 2006-2008  Florian Pose, Ingenieurgemeinschaft IgH
+ *  Copyright (C) 2006-2026  Florian Pose, Ingenieurgemeinschaft IgH
  *
  *  This file is part of the IgH EtherCAT Master.
  *
@@ -39,7 +39,7 @@
  * process data size for the mapped PDOs of the given direction to the domain
  * data size.
  */
-int ec_fmmu_config_init(
+void ec_fmmu_config_init(
         ec_fmmu_config_t *fmmu, /**< EtherCAT FMMU configuration. */
         ec_slave_config_t *sc, /**< EtherCAT slave configuration. */
         ec_domain_t *domain, /**< EtherCAT domain. */
@@ -56,15 +56,7 @@ int ec_fmmu_config_init(
     fmmu->data_size = ec_pdo_list_total_size(
             &sc->sync_configs[sync_index].pdos);
 
-    if (fmmu->data_size > EC_MAX_DATA_SIZE) {
-        EC_CONFIG_ERR(fmmu->sc, "FMMU with data size %3u bytes would exceed"
-                " maximum datagram size (%u bytes).\n",
-                fmmu->data_size, EC_MAX_DATA_SIZE);
-        return -ENOMEM;
-    }
-
     ec_domain_add_fmmu_config(domain, fmmu);
-    return 0;
 }
 
 /****************************************************************************/

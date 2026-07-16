@@ -222,7 +222,6 @@ int ec_slave_config_prepare_fmmu(
 {
     unsigned int i;
     ec_fmmu_config_t *fmmu;
-    int ret = 0;
 
     // FMMU configuration already prepared?
     for (i = 0; i < sc->used_fmmus; i++) {
@@ -239,12 +238,8 @@ int ec_slave_config_prepare_fmmu(
     fmmu = &sc->fmmu_configs[sc->used_fmmus++];
 
     down(&sc->master->master_sem);
-    ret = ec_fmmu_config_init(fmmu, sc, domain, sync_index, dir);
+    ec_fmmu_config_init(fmmu, sc, domain, sync_index, dir);
     up(&sc->master->master_sem);
-
-    if (ret < 0) {
-        return ret;
-    }
 
     return fmmu->logical_start_address;
 }

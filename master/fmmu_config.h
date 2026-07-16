@@ -47,7 +47,7 @@ typedef struct {
 
 /****************************************************************************/
 
-int ec_fmmu_config_init(ec_fmmu_config_t *, ec_slave_config_t *,
+void ec_fmmu_config_init(ec_fmmu_config_t *, ec_slave_config_t *,
         ec_domain_t *, uint8_t, ec_direction_t);
 
 void ec_fmmu_config_page(const ec_fmmu_config_t *, const ec_sync_t *,

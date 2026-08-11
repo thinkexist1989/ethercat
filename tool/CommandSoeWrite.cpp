@@ -58,11 +58,11 @@ string CommandSoeWrite::helpString(const string &binaryBaseName) const
         << "             Bit 11 - 0: Data block number" << endl
         << "           or a string like 'P-0-150'." << endl
         << "  VALUE    is the value to write (see below)." << endl
-		<< endl
-        << "The VALUE argument is interpreted as the given data type" << endl
-		<< "(--type is mandatory) and written to the selected slave." << endl
         << endl
-		<< typeInfo()
+        << "The VALUE argument is interpreted as the given data type" << endl
+        << "(--type is mandatory) and written to the selected slave." << endl
+        << endl
+        << typeInfo()
         << endl
         << "Command-specific options:" << endl
         << "  --alias    -a <alias>" << endl

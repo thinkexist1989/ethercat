@@ -1,6 +1,6 @@
 /*****************************************************************************
  *
- *  Copyright (C) 2006-2008  Florian Pose, Ingenieurgemeinschaft IgH
+ *  Copyright (C) 2006-2026  Florian Pose, Ingenieurgemeinschaft IgH
  *
  *  This file is part of the IgH EtherCAT Master.
  *
@@ -134,8 +134,10 @@ int ec_device_init(
 #endif
 
     for (i = 0; i < EC_TX_RING_SIZE; i++) {
-        if (!(device->tx_skb[i] = dev_alloc_skb(ETH_FRAME_LEN + EXTRA_HEADROOM))) {
-            EC_MASTER_ERR(master, "Error allocating device socket buffer!\n");
+        if (!(device->tx_skb[i] =
+                    dev_alloc_skb(ETH_FRAME_LEN + EXTRA_HEADROOM))) {
+            EC_MASTER_ERR(master,
+                    "Error allocating device socket buffer!\n");
             ret = -ENOMEM;
             goto out_tx_ring;
         }
@@ -175,8 +177,11 @@ void ec_device_clear(
     if (device->open) {
         ec_device_close(device);
     }
-    for (i = 0; i < EC_TX_RING_SIZE; i++)
+
+    for (i = 0; i < EC_TX_RING_SIZE; i++) {
         dev_kfree_skb(device->tx_skb[i]);
+    }
+
 #ifdef EC_DEBUG_IF
     ec_debug_clear(&device->dbg);
 #endif
@@ -188,7 +193,7 @@ void ec_device_clear(
  */
 void ec_device_attach(
         ec_device_t *device, /**< EtherCAT device */
-        struct net_device *net_dev, /**< net_device structure */
+        struct net_device *net_dev, /**< The net_device structure */
         ec_pollfunc_t poll, /**< pointer to device's poll function */
         struct module *module /**< the device's module */
         )
@@ -211,7 +216,7 @@ void ec_device_attach(
 #ifdef EC_DEBUG_IF
     ec_debug_register(&device->dbg, net_dev);
 #endif
-}
+} // NOLINT(whitespace/indent) false positive
 
 /****************************************************************************/
 

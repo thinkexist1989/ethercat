@@ -1,6 +1,14 @@
 # Version History
 
+## Version 1.6.11
+
 - Protect datagram receiving mechanism against re-ordering.
+- Prevent creating datagrams that are too large for one frame
+- Added cpplint checks in pre-commit and CI tests.
+- Improved and formatted markdown documents and added pre-commit checks
+- Adapted debug ring to kernel 5.6+ time API changes
+- Use str.read() to read into char * (deprecated in C++20)
+- Unload ec_bhf before loading CCAT
 
 ## Version 1.6.10
 

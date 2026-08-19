@@ -1,5 +1,9 @@
 # Version History
 
+## Version 1.6.12
+
+- Backported CCAT fixes from Beckhoff
+
 ## Version 1.6.11
 
 - Protect datagram receiving mechanism against re-ordering

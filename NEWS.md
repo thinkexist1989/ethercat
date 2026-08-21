@@ -1,5 +1,9 @@
 # Version History
 
+## Since 1.6.12
+
+- Improved macb driver performance
+
 ## Version 1.6.12
 
 - Backported CCAT fixes from Beckhoff

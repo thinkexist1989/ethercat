@@ -29,7 +29,41 @@ Failed to find Linux sources. Use --with-linux-dir!
 
 此时必须用 `--with-linux-dir` 显式指定内核源码路径。
 
-### 2.2 从 Git 仓库获取源码
+### 2.2 安装构建依赖
+
+`bootstrap` 使用 `autoreconf` 生成 `configure` 脚本。`autoreconf` 由
+`autoconf` 软件包提供。如果出现 `autoreconf: command not found`,请根据
+发行版安装以下依赖。
+
+Ubuntu / Debian:
+
+```bash
+sudo apt update
+sudo apt install autoconf automake libtool pkg-config build-essential \
+  linux-headers-$(uname -r)
+```
+
+Fedora / RHEL:
+
+```bash
+sudo dnf install autoconf automake libtool pkgconf-pkg-config \
+  gcc gcc-c++ make kernel-devel
+```
+
+Arch Linux:
+
+```bash
+sudo pacman -S autoconf automake libtool pkgconf base-devel linux-headers
+```
+
+如果编译目标不是当前运行的内核,需要安装目标内核对应的开发包,并通过
+`--with-linux-dir=<DIR>` 指向该内核的构建目录。安装后可检查 Autotools:
+
+```bash
+autoreconf --version
+```
+
+### 2.3 从 Git 仓库获取源码
 
 `configure` 脚本并不随仓库提交,需要先运行 `bootstrap` 生成:
 

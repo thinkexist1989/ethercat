@@ -2,6 +2,8 @@
 
 本文档详细介绍 IgH EtherCAT Master(版本 1.6.12)如何编译、如何配置,以及如何快速运行示例程序。
 
+在 WSL 编译并部署到远程 Linux 主机，请参阅[远端部署说明](remote-deployment.md)，使用 `script/deploy-remote.sh` 一键构建部署。
+
 ## 1. 总览
 
 IgH EtherCAT Master 是一个运行在 Linux 之上的 EtherCAT 主站实现。它由以下几部分组成:

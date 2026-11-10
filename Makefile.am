@@ -65,6 +65,7 @@ EXTRA_DIST = \
 	INSTALL.md \
 	README.EoE \
 	README.md \
+	docs/remote-deployment.md \
 	ethercat.spec
 
 mydist:

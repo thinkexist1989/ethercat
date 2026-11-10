@@ -35,7 +35,8 @@ script_templates = \
 EXTRA_DIST = \
 	$(script_templates) \
 	ethercat.bash_completion \
-	ifup-eoe.sh
+	ifup-eoe.sh \
+	deploy-remote.sh
 
 CLEANFILES = \
 	ethercatctl \
